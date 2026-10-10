@@ -1,0 +1,3 @@
+# On n'envoie au build Docker que le jar
+*
+!target/*.jar

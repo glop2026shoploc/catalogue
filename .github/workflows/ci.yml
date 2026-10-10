@@ -1,0 +1,18 @@
+name: CI Backend
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: glop2026shoploc/.github/.github/workflows/ci-back.yml@main
+    with:
+      image-name: catalogue
+    permissions:
+      contents: read
+      packages: write
