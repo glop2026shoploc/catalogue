@@ -1,6 +1,6 @@
 package com.glop.catalogue.out.postgresdb.adapter;
 
-import com.glop.catalogue.domain.adapter.out.TestAdapterOut;
+import com.glop.catalogue.domain.port.out.TestPortOut;
 import com.glop.catalogue.domain.model.TestModel;
 import com.glop.catalogue.out.postgresdb.entity.TestEntity;
 import com.glop.catalogue.out.postgresdb.mapper.TestOutMapper;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class TestAdapterOutImpl implements TestAdapterOut {
+public class TestAdapterOutImpl implements TestPortOut {
     TestRepository testRepository;
     TestOutMapper mapper;
     @Override
