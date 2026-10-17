@@ -24,3 +24,9 @@ spring:
         baseline-on-migrate: true
         baseline-version: 0
         validate-on-migrate: true
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,prometheus
