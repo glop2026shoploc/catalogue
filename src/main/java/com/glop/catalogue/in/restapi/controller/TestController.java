@@ -3,6 +3,7 @@ package com.glop.catalogue.in.restapi.controller;
 import com.glop.catalogue.domain.port.in.TestPortIn;
 import com.glop.catalogue.in.restapi.mapper.TestInMapper;
 import com.glop.catalogue.in.restapi.payload.TestPayload;
+import com.glop.catalogue.in.restapi.payload.UpdateTestMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
