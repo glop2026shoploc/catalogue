@@ -8,7 +8,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import com.glop.catalogue.in.restapi.config.error.ErrorResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,11 @@ public class TestController {
     })
     public TestPayload getInformation(){
         return mapper.toTestPayload(testAdapterIn.getTestInformation(false));
+    }
+
+    @PostMapping
+    public TestPayload updateInformation(@RequestBody UpdateTestMessage request) {
+        return mapper.toTestPayload(testAdapterIn.updateMessage(request.getMessage()));
     }
 
 }

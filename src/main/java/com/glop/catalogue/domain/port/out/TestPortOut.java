@@ -6,4 +6,6 @@ public interface TestPortOut {
     TestModel findTestInformation();
 
     void incrementRequestNumber();
+
+    TestModel updateMessage(String message);
 }

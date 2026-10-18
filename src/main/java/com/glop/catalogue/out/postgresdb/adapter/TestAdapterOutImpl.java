@@ -24,4 +24,12 @@ public class TestAdapterOutImpl implements TestPortOut {
         testEntity.setTotalRequest(testEntity.getTotalRequest()+1);
         testRepository.save(testEntity);
     }
+
+    @Override
+    public TestModel updateMessage(String message) {
+        TestEntity testEntity = testRepository.findFirstByOrderByTestIdAsc().orElseThrow();
+        testEntity.setMessage(message);
+        testRepository.save(testEntity);
+        return mapper.toTestModel(testEntity);
+    }
 }

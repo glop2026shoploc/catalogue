@@ -5,4 +5,5 @@ import com.glop.catalogue.domain.model.TestModel;
 public interface TestPortIn {
     TestModel getTestInformation(Boolean shouldThrowError);
 
+    TestModel updateMessage(String message);
 }
