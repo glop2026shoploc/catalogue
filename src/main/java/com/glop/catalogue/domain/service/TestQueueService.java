@@ -13,7 +13,8 @@ public class TestQueueService implements TestQueueAdapterIn {
     private final TestMessageAdapterOut messageAdapterOut;
     @Override
     public void sendMessage(QueueMessageModel queueMessageSend) {
-        messageAdapterOut.sendMessage(queueMessageSend);
+        messageAdapterOut.sendMessageInternal(queueMessageSend);
+        messageAdapterOut.sendMessageUser(queueMessageSend);
     }
 
     @Override

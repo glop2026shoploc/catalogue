@@ -4,5 +4,6 @@ import com.glop.catalogue.domain.model.QueueMessageModel;
 import com.glop.catalogue.in.restapi.payload.QueueMessageSend;
 
 public interface TestMessageAdapterOut {
-    void sendMessage(QueueMessageModel queueMessageSend);
+    void sendMessageUser(QueueMessageModel queueMessageSend);
+    void sendMessageInternal(QueueMessageModel queueMessageSend);
 }
