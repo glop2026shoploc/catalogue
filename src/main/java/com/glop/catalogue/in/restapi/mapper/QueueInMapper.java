@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface QueueInMapper {
     @Mapping(target = "message", source = "message")
+    @Mapping(target = "object", source = "object")
+    @Mapping(target = "attachments", source = "attachments")
     QueueMessageModel toQueueMessageModel(QueueMessageSend messageSend);
 
 }
