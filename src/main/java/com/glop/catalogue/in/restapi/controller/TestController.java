@@ -1,7 +1,6 @@
 package com.glop.catalogue.in.restapi.controller;
 
-import com.glop.catalogue.domain.adapter.in.TestAdapterIn;
-import com.glop.catalogue.domain.adapter.in.TestQueueAdapterIn;
+import com.glop.catalogue.domain.port.in.TestQueuePortIn;
 import com.glop.catalogue.in.restapi.mapper.QueueInMapper;
 import com.glop.catalogue.domain.port.in.TestPortIn;
 import com.glop.catalogue.in.restapi.mapper.TestInMapper;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
@@ -30,7 +28,7 @@ public class TestController {
     TestPortIn testAdapterIn;
     TestInMapper mapper;
     QueueInMapper queueInMapper;
-    TestQueueAdapterIn queueAdapterIn;
+    TestQueuePortIn queuePortIn;
     @GetMapping
     @Operation(summary = "Get test information")
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
@@ -52,7 +50,7 @@ public class TestController {
     }
     @PostMapping("/sendMessage")
     public void sendQueueOneMessage(@RequestBody QueueMessageSend messageSend){
-        queueAdapterIn.sendMessage(queueInMapper.toQueueMessageModel(messageSend));
+        queuePortIn.sendMessage(queueInMapper.toQueueMessageModel(messageSend));
     }
 
 }

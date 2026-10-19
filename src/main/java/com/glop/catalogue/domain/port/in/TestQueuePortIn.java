@@ -1,9 +1,8 @@
-package com.glop.catalogue.domain.adapter.in;
+package com.glop.catalogue.domain.port.in;
 
 import com.glop.catalogue.domain.model.QueueMessageModel;
-import com.glop.catalogue.in.restapi.payload.QueueMessageSend;
 
-public interface TestQueueAdapterIn {
+public interface TestQueuePortIn {
     void sendMessage(QueueMessageModel queueMessageSend);
     void printMessageInConsole(QueueMessageModel queueMessageSend);
 }
