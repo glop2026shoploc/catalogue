@@ -7,7 +7,9 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.Duration;
 
@@ -19,9 +21,16 @@ public class GarageRepository{
     private final GarageProperties props;
 
     public void upload(String key, InputStream content, long size, String contentType) {
+        // En HTTP le SDK signe le contenu et doit le relire : un InputStream ne se lit qu'une fois, on le charge en mémoire
+        byte[] bytes;
+        try {
+            bytes = content.readAllBytes();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
         s3Client.putObject(
                 r -> r.bucket(props.bucket()).key(key).contentType(contentType),
-                RequestBody.fromInputStream(content, size));
+                RequestBody.fromBytes(bytes));
     }
 
     public InputStream download(String key) {

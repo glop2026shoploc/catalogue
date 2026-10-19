@@ -3,6 +3,10 @@ server:
     servlet:
         context-path: /api/catalogue
 spring:
+    servlet:
+        multipart:
+            max-file-size: 200MB
+            max-request-size: 200MB
     application:
         name: catalogue
     datasource:
@@ -28,3 +32,9 @@ spring:
         baseline-on-migrate: true
         baseline-version: 0
         validate-on-migrate: true
+garage:
+    endpoint: http://localhost:3900
+    access-key: GK0123456789abcdef0123456789abcdef
+    secret-key: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    region-name: garage
+    bucket: active
