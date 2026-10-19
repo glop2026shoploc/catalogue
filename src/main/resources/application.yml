@@ -1,3 +1,7 @@
+server:
+    port: 8085  # 8080 est pris par la gateway
+    servlet:
+        context-path: /api/catalogue
 spring:
     application:
         name: catalogue
@@ -32,3 +36,9 @@ spring:
      client:
         service-url:
             defaultZone: http://localhost:8761/eureka/
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,prometheus

@@ -18,4 +18,10 @@ public class TestService implements TestAdapterIn {
         testModel.setMyOtherMessage("Test Message");
         return testModel;
     }
-}
+
+    @Override
+    public TestModel updateMessage(String message) {
+        TestModel testModel = testAdapter.updateMessage(message);
+        testModel.setMyOtherMessage("Test Message");
+        return testModel;
+    }}
