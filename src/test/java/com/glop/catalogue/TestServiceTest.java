@@ -1,7 +1,9 @@
 package com.glop.catalogue;
 
-import com.glop.catalogue.domain.adapter.out.TestAdapterOut;
+
+
 import com.glop.catalogue.domain.model.TestModel;
+import com.glop.catalogue.domain.port.out.TestPortOut;
 import com.glop.catalogue.domain.service.TestService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +18,7 @@ import static org.mockito.Mockito.*;
 class TestServiceTest {
 
     @Mock
-    TestAdapterOut adapter;
+    TestPortOut adapter;
 
     @InjectMocks
     TestService service;

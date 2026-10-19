@@ -34,7 +34,7 @@ spring:
         baseline-version: 0
         validate-on-migrate: true
     eureka:
-     client:
+      client:
         service-url:
             defaultZone: http://localhost:8761/eureka/
 
