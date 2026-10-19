@@ -1,7 +1,11 @@
 package com.glop.catalogue.in.restapi.controller;
 
+import com.glop.catalogue.domain.adapter.in.TestAdapterIn;
+import com.glop.catalogue.domain.adapter.in.TestQueueAdapterIn;
+import com.glop.catalogue.in.restapi.mapper.QueueInMapper;
 import com.glop.catalogue.domain.port.in.TestPortIn;
 import com.glop.catalogue.in.restapi.mapper.TestInMapper;
+import com.glop.catalogue.in.restapi.payload.QueueMessageSend;
 import com.glop.catalogue.in.restapi.payload.TestPayload;
 import com.glop.catalogue.in.restapi.payload.UpdateTestMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     TestPortIn testAdapterIn;
     TestInMapper mapper;
+    QueueInMapper queueInMapper;
+    TestQueueAdapterIn queueAdapterIn;
     @GetMapping
     @Operation(summary = "Get test information")
     @ResponseStatus(HttpStatus.BAD_GATEWAY)
@@ -43,6 +49,10 @@ public class TestController {
     @PostMapping
     public TestPayload updateInformation(@RequestBody UpdateTestMessage request) {
         return mapper.toTestPayload(testAdapterIn.updateMessage(request.getMessage()));
+    }
+    @PostMapping("/sendMessage")
+    public void sendQueueOneMessage(@RequestBody QueueMessageSend messageSend){
+        queueAdapterIn.sendMessage(queueInMapper.toQueueMessageModel(messageSend));
     }
 
 }

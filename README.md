@@ -24,6 +24,7 @@ Microservice **catalogue produits** du projet glop — Spring Boot (Java 21) + P
 - [Conventions](#conventions)
 - [POC](#POC)
   - [Garage](#garage)
+  - [Jacoco](#couverture-de-code-avec-jacoco)
 
 ---
 
@@ -352,4 +353,62 @@ Maintenant que les beans sont créer on va pouvoir créer `GarageRepository` pou
     }
 
    ```
+
+
+### Couverture de code avec JaCoCo
+
+JaCoCo mesure les parties du code exécutées pendant les tests.
+
+#### 1. Lancer les tests
+
+Sous Windows, dans PowerShell :
+
+```powershell
+.\mvnw.cmd test
+```
+
+Sous Linux ou macOS :
+
+```bash
+./mvnw test
+```
+
+Ou, si Maven est installé :
+
+```bash
+mvn test
+```
+
+Le rapport est généré automatiquement si JaCoCo est configuré dans le `pom.xml`.
+
+#### 2. Ouvrir le rapport
+
+Le fichier HTML se trouve ici :
+
+```text
+target/site/jacoco/index.html
+```
+
+On peut l’ouvrir directement avec son navigateur. ou commande :
+
+**Sous Windows (PowerShell) :**
+
+```powershell
+Start-Process .\target\site\jacoco\index.html
+```
+
+**Sous Linux :**
+
+```bash
+xdg-open target/site/jacoco/index.html
+```
+
+**Sous macOS :**
+
+```bash
+open target/site/jacoco/index.html
+```
+
+Le rapport présente les classes, les lignes couvertes ou non couvertes et les pourcentages de couverture.
+
 

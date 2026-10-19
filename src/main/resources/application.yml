@@ -32,6 +32,13 @@ spring:
         baseline-on-migrate: true
         baseline-version: 0
         validate-on-migrate: true
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,prometheus
+
 garage:
     endpoint: http://localhost:3900
     access-key: GK0123456789abcdef0123456789abcdef
