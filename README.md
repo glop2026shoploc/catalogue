@@ -362,6 +362,24 @@ Maintenant que les beans sont créer on va pouvoir créer `GarageRepository` pou
 
    ```
 
+### RabbitMQ
+
+#### Description
+
+RabbitMQ permet d'envoyer des messages entre différents services. On passera par des messages (en asynchrone) seulement quand un service n'a pas besoin d'attendre la réponse, par exemple pour envoyer une notification.
+
+#### Configuration
+
+- Chaque microservice doit ajouter la dépendance `spring-boot-starter-amqp`.
+- Pour créer une queue, on ajoute pour chacune un bean de type `Queue` qui définit son nom.
+- Pour envoyer un message, on utilise une instance de `RabbitTemplate` en précisant le nom de la queue souhaitée.
+- Pour recevoir un message, on utilise l'annotation `@RabbitListener` en précisant le nom de la queue écoutée. Pour que cela fonctionne, le receveur doit être connecté à RabbitMQ.
+
+#### Utilisation
+
+RabbitMQ propose une interface web pour suivre les différentes queues et y déposer des messages directement. On peut y voir le statut des queues et des consommateurs, ainsi que des graphiques sur les flux de messages. On y voit les messages envoyés puis consommés.
+
+Pour tester : le service Commande envoie des messages dans une queue, le service Users les reçoit et les affiche.
 
 ### Couverture de code avec JaCoCo
 
