@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/catalogue/test")
+@RequestMapping("/test")
 public class TestController {
     TestAdapterIn testAdapterIn;
     TestInMapper mapper;

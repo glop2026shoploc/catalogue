@@ -1,6 +1,7 @@
 server:
     port: 8085  # 8080 est pris par la gateway
-
+    servlet:
+        context-path: /api/catalogue
 spring:
     application:
         name: catalogue
