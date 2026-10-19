@@ -11,6 +11,33 @@ services:
       - "127.0.0.1:5436:5432"
     volumes:
       - catalogue-dev-data:/var/lib/postgresql/data
+  garage:
+    image: dxflrs/garage:v2.4.1
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      GARAGE_DEFAULT_ACCESS_KEY: GK0123456789abcdef0123456789abcdef   # GK + 32 hex
+      GARAGE_DEFAULT_SECRET_KEY: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef  # 64 hex
+      GARAGE_DEFAULT_BUCKET: active
+    ports:
+      - "127.0.0.1:3900:3900"   # API S3
+      - "127.0.0.1:3901:3901"   # RPC
+      - "127.0.0.1:3903:3903"   # admin
+    volumes:
+      - ./garage/config/garage.toml:/etc/garage.toml
+      - ./garage/meta:/var/lib/garage/meta
+      - ./garage/data:/var/lib/garage/data
+  garage-webui:
+    image: khairul169/garage-webui:latest
+    depends_on:
+      - garage
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+      API_ADMIN_KEY: "dev-admin-token"
+    volumes:
+      - ./garage/config/garage.toml:/etc/garage.toml:ro
+    ports:
+      - "127.0.0.1:3909:3909"
   rabbitmq:
     image: rabbitmq:management
     container_name: rabbitmq

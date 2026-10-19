@@ -1,8 +1,8 @@
-package com.glop.catalogue.domain.adapter.in;
+package com.glop.catalogue.domain.port.in;
 
 import com.glop.catalogue.domain.model.TestModel;
 
-public interface TestAdapterIn {
+public interface TestPortIn {
     TestModel getTestInformation(Boolean shouldThrowError);
 
     TestModel updateMessage(String message);

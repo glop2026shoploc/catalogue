@@ -3,6 +3,10 @@ server:
     servlet:
         context-path: /api/catalogue
 spring:
+    servlet:
+        multipart:
+            max-file-size: 200MB
+            max-request-size: 200MB
     application:
         name: catalogue
     rabbitmq:
@@ -33,3 +37,9 @@ spring:
         baseline-on-migrate: true
         baseline-version: 0
         validate-on-migrate: true
+garage:
+    endpoint: ${GARAGE_ENDPOINT:http://localhost:3900}
+    access-key: ${GARAGE_ACCESS_KEY:GK0123456789abcdef0123456789abcdef}
+    secret-key: ${GARAGE_SECRET_KEY:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+    region-name: garage
+    bucket: active

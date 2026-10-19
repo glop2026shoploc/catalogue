@@ -1,15 +1,16 @@
 package com.glop.catalogue.domain.service;
 
-import com.glop.catalogue.domain.adapter.in.TestQueueAdapterIn;
+
 import com.glop.catalogue.domain.adapter.out.TestMessageAdapterOut;
 import com.glop.catalogue.domain.model.QueueMessageModel;
-import com.glop.catalogue.in.restapi.payload.QueueMessageSend;
+import com.glop.catalogue.domain.port.in.TestQueuePortIn;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TestQueueService implements TestQueueAdapterIn {
+public class TestQueueService implements TestQueuePortIn {
     private final TestMessageAdapterOut messageAdapterOut;
     @Override
     public void sendMessage(QueueMessageModel queueMessageSend) {
