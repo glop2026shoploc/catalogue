@@ -45,8 +45,8 @@ spring:
                     include: health,prometheus
 
 garage:
-    endpoint: http://localhost:3900
-    access-key: ${GARAGE-ACCESS-KEY:}
-    secret-key: ${GARAGE-SECRET-KEY:}
+    endpoint: ${GARAGE_ENDPOINT:http://localhost:3900}
+    access-key: ${GARAGE_ACCESS_KEY:GK0123456789abcdef0123456789abcdef}
+    secret-key: ${GARAGE_SECRET_KEY:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
     region-name: garage
     bucket: active
