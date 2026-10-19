@@ -31,7 +31,7 @@ public class TestController {
     TestQueuePortIn queuePortIn;
     @GetMapping
     @Operation(summary = "Get test information")
-    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ResponseStatus(HttpStatus.OK)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Information successfully found",
             content = @Content(schema = @Schema(implementation = TestPayload.class))),
