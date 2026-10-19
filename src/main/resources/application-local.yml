@@ -39,7 +39,7 @@ spring:
         validate-on-migrate: true
 garage:
     endpoint: http://localhost:3900
-    access-key: GK0123456789abcdef0123456789abcdef
-    secret-key: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    access-key: ${GARAGE-ACCESS-KEY:GK0123456789abcdef0123456789abcdef}
+    secret-key: ${GARAGE-SECRET-KEY:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
     region-name: garage
     bucket: active
