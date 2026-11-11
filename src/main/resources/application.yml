@@ -3,6 +3,8 @@ server:
     servlet:
         context-path: /api/catalogue
 spring:
+    config:
+        import: optional:file:.env[.properties]
     servlet:
         multipart:
             max-file-size: 200MB
@@ -50,3 +52,5 @@ garage:
     secret-key: ${GARAGE_SECRET_KEY:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
     region-name: garage
     bucket: active
+app:
+    secret-key: ${APP_SECRET_KEY:}
