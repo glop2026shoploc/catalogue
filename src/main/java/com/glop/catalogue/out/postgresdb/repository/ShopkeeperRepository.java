@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface ShopkeeperRepository extends JpaRepository<ShopkeeperEntity, UUID> {
     List<ShopkeeperEntity> findAllByOrderByNameAsc();
-    List<ShopkeeperEntity> findByCategoryIgnoreCaseOrderByNameAsc(String category);
+    List<ShopkeeperEntity> findByCategory_NameIgnoreCaseOrderByNameAsc(String category);
 }
