@@ -1,0 +1,34 @@
+-- Donnees de demonstration pour tester le filtre US-207.
+-- La ville est referencee par son UUID ; la table city n'est pas dans Catalogue.
+
+INSERT INTO category (category_id, name)
+VALUES
+    ('20700000-0000-4000-8000-000000000011', 'Boulangerie'),
+    ('20700000-0000-4000-8000-000000000012', 'Presse'),
+    ('20700000-0000-4000-8000-000000000013', U&'V\00eatements'),
+    ('20700000-0000-4000-8000-000000000014', 'Alimentation')
+ON CONFLICT (category_id) DO UPDATE SET name = EXCLUDED.name;
+
+INSERT INTO address (address_id, road, number, city_id)
+VALUES
+    ('20700000-0000-4000-8000-000000000021', 'rue de la Paix', '12', '20700000-0000-4000-8000-000000000099'),
+    ('20700000-0000-4000-8000-000000000022', U&'place du March\00e9', '4', '20700000-0000-4000-8000-000000000099'),
+    ('20700000-0000-4000-8000-000000000023', 'rue des Fleurs', '8', '20700000-0000-4000-8000-000000000099'),
+    ('20700000-0000-4000-8000-000000000024', 'avenue Victor Hugo', '17', '20700000-0000-4000-8000-000000000099')
+ON CONFLICT (address_id) DO UPDATE SET
+    road = EXCLUDED.road,
+    number = EXCLUDED.number,
+    city_id = EXCLUDED.city_id;
+
+INSERT INTO shop (shop_id, name, siret_number, status, address_id, category_id)
+VALUES
+    ('20700000-0000-4000-8000-000000000001', 'Boulangerie du Centre', '20700000000011', 'VALIDATED', '20700000-0000-4000-8000-000000000021', '20700000-0000-4000-8000-000000000011'),
+    ('20700000-0000-4000-8000-000000000002', U&'Presse du March\00e9', '20700000000012', 'VALIDATED', '20700000-0000-4000-8000-000000000022', '20700000-0000-4000-8000-000000000012'),
+    ('20700000-0000-4000-8000-000000000003', 'Boutique des Fleurs', '20700000000013', 'VALIDATED', '20700000-0000-4000-8000-000000000023', '20700000-0000-4000-8000-000000000013'),
+    ('20700000-0000-4000-8000-000000000004', U&'\00c9picerie du Quartier', '20700000000014', 'VALIDATED', '20700000-0000-4000-8000-000000000024', '20700000-0000-4000-8000-000000000014')
+ON CONFLICT (shop_id) DO UPDATE SET
+    name = EXCLUDED.name,
+    siret_number = EXCLUDED.siret_number,
+    status = EXCLUDED.status,
+    address_id = EXCLUDED.address_id,
+    category_id = EXCLUDED.category_id;
