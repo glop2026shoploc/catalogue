@@ -76,4 +76,13 @@ class ShopServiceTest {
 
         verifyNoInteractions(categoryPortOut);
     }
+
+    @Test
+    void testListWaitingShouldReturnWaitingShops() {
+        when(shopPortOut.findByStatus(ShopStatus.WAITING)).thenReturn(List.of(shop));
+
+        List<ShopModel> result = shopService.listWaiting();
+
+        assertThat(result).containsExactly(shop);
+    }
 }

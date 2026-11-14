@@ -103,6 +103,18 @@ class ShopControllerTest {
     }
 
     @Test
+    void testListWaitingShouldReturnWaitingShops() throws Exception {
+        ShopModel shop = ShopModel.builder().shopId(SHOP_ID).name("MonCommerce").status(ShopStatus.WAITING).build();
+        when(shopPortIn.listWaiting()).thenReturn(List.of(shop));
+
+        mockMvc.perform(get("/shops/admin/waiting"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].shopId").value(SHOP_ID.toString()))
+                .andExpect(jsonPath("$[0].name").value("MonCommerce"))
+                .andExpect(jsonPath("$[0].status").value("WAITING"));
+    }
+
+    @Test
     void testListCategoriesShouldReturnCategories() throws Exception {
         UUID categoryId = UUID.randomUUID();
         when(categoryPortIn.listCategories()).thenReturn(List.of(new CategoryModel(categoryId, "Café")));

@@ -83,4 +83,17 @@ class ShopAdapterOutTest {
         verifyNoInteractions(categoryRepository);
         assertThat(created.getCategoryIds()).isEmpty();
     }
+
+    @Test
+    void testFindByStatusShouldReturnShopsWithThisStatus() {
+        ShopEntity entity = new ShopEntity();
+        entity.setName("MonCommerce");
+        entity.setStatus(ShopStatus.WAITING);
+        when(shopRepository.findByStatus(ShopStatus.WAITING)).thenReturn(List.of(entity));
+
+        List<ShopModel> result = adapter.findByStatus(ShopStatus.WAITING);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("MonCommerce");
+    }
 }

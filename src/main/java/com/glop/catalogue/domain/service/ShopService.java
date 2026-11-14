@@ -32,4 +32,9 @@ public class ShopService implements ShopPortIn {
         shop.setStatus(ShopStatus.WAITING);
         return shopPortOut.create(shop);
     }
+
+    @Override
+    public List<ShopModel> listWaiting() {
+        return shopPortOut.findByStatus(ShopStatus.WAITING);
+    }
 }
