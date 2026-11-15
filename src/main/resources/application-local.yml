@@ -39,6 +39,9 @@ spring:
         baseline-on-migrate: true
         baseline-version: 0
         validate-on-migrate: true
+app:
+    # Secret de DEV uniquement — doit être identique à celui du service d'auth en local
+    secret-key: ${JWT_SECRET:dev-only-catalogue-jwt-secret-change-me-0123456789}
 garage:
     endpoint: ${GARAGE_ENDPOINT:http://localhost:3900}
     access-key: ${GARAGE_ACCESS_KEY:GK0123456789abcdef0123456789abcdef}
