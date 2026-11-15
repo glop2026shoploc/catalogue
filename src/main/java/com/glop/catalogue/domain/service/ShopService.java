@@ -1,6 +1,7 @@
 package com.glop.catalogue.domain.service;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
+import com.glop.catalogue.domain.config.exception.ShopNotFoundException;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.ShopPortIn;
@@ -32,4 +33,13 @@ public class ShopService implements ShopPortIn {
         shop.setStatus(ShopStatus.WAITING);
         return shopPortOut.create(shop);
     }
+
+    @Override
+    public void addClientFavoriteShop(UUID shopId, UUID clientId) {
+        if (!shopPortOut.exists(shopId))throw new ShopNotFoundException();
+        if(shopPortOut.isInFavorite(shopId,clientId))return;
+        shopPortOut.addToFavorite(shopId,clientId);
+
+    }
+
 }

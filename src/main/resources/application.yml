@@ -46,10 +46,6 @@ spring:
                 exposure:
                     include: health,prometheus
 
-app:
-    # Secret HMAC partagé avec le service d'auth (>= 32 caractères)
-    secret-key: ${JWT_SECRET}
-
 garage:
     endpoint: ${GARAGE_ENDPOINT:http://localhost:3900}
     access-key: ${GARAGE_ACCESS_KEY:GK0123456789abcdef0123456789abcdef}
