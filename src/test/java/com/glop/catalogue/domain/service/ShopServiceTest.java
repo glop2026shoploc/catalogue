@@ -5,6 +5,7 @@ import com.glop.catalogue.domain.model.shop.ShopAddressModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.out.CategoryPortOut;
+import com.glop.catalogue.domain.port.out.FileStorage;
 import com.glop.catalogue.domain.port.out.ShopPortOut;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +15,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +37,8 @@ class ShopServiceTest {
     private ShopPortOut shopPortOut;
     @Mock
     private CategoryPortOut categoryPortOut;
+    @Mock
+    private FileStorage fileStorage;
     @InjectMocks
     private ShopService shopService;
 
@@ -131,5 +139,53 @@ class ShopServiceTest {
         shopService.updateStatus(shopId, ShopStatus.VALIDATED);
 
         verify(shopPortOut).updateStatus(shopId, ShopStatus.VALIDATED);
+    }
+
+    @Test
+    void testUploadDocumentShouldStoreFileInShopFolder() {
+        UUID shopId = UUID.randomUUID();
+        InputStream content = new ByteArrayInputStream(new byte[10]);
+        when(shopPortOut.findById(shopId)).thenReturn(shop);
+
+        shopService.uploadDocument(shopId, content, 10, "application/pdf");
+
+        verify(fileStorage).upload(startsWith("shops/" + shopId + "/documents/"), eq(content), eq(10L), eq("application/pdf"));
+    }
+
+    @Test
+    void testUploadDocumentShouldThrowWhenTypeIsNotAllowed() {
+        UUID shopId = UUID.randomUUID();
+        InputStream content = new ByteArrayInputStream(new byte[10]);
+
+        assertThatThrownBy(() -> shopService.uploadDocument(shopId, content, 10, "text/plain"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("PDF, un JPEG ou un PNG");
+
+        verifyNoInteractions(fileStorage);
+    }
+
+    @Test
+    void testUploadDocumentShouldThrowWhenFileIsTooBig() {
+        UUID shopId = UUID.randomUUID();
+        InputStream content = new ByteArrayInputStream(new byte[10]);
+
+        assertThatThrownBy(() -> shopService.uploadDocument(shopId, content, 5 * 1024 * 1024, "application/pdf"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("4 Mo");
+
+        verifyNoInteractions(fileStorage);
+    }
+
+    @Test
+    void testUploadDocumentShouldThrowWhenShopNotFound() {
+        UUID shopId = UUID.randomUUID();
+        InputStream content = new ByteArrayInputStream(new byte[10]);
+        when(shopPortOut.findById(shopId)).thenReturn(null);
+
+        assertThatThrownBy(() -> shopService.uploadDocument(shopId, content, 10, "application/pdf"))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Commerce introuvable.");
+
+        verify(fileStorage, never()).upload(any(), any(), anyLong(), any());
     }
 }

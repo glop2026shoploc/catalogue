@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -24,8 +25,10 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -131,6 +134,16 @@ class ShopControllerTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(shopPortIn);
+    }
+
+    @Test
+    void testUploadDocumentShouldReturn201() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("file", "kbis.pdf", "application/pdf", new byte[10]);
+
+        mockMvc.perform(multipart("/shops/" + SHOP_ID + "/documents").file(file))
+                .andExpect(status().isCreated());
+
+        verify(shopPortIn).uploadDocument(eq(SHOP_ID), any(), eq(10L), eq("application/pdf"));
     }
 
     @Test

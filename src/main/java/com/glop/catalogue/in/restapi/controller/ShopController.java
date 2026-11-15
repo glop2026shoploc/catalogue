@@ -9,8 +9,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,5 +43,14 @@ public class ShopController {
     @Operation(summary = "Accepte ou refuse un commerce en attente")
     public ShopPayload updateStatus(@PathVariable UUID shopId, @RequestParam ShopStatus status) {
         return shopInMapper.toShopPayload(shopPortIn.updateStatus(shopId, status));
+    }
+
+    @PostMapping(value = "/{shopId}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Ajoute une pièce justificative au commerce")
+    public void uploadDocument(@PathVariable UUID shopId, @RequestPart("file") MultipartFile file) throws IOException {
+        try (InputStream content = file.getInputStream()) {
+            shopPortIn.uploadDocument(shopId, content, file.getSize(), file.getContentType());
+        }
     }
 }
