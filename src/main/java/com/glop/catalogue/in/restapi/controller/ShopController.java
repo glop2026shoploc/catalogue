@@ -53,4 +53,10 @@ public class ShopController {
             shopPortIn.uploadDocument(shopId, content, file.getSize(), file.getContentType());
         }
     }
+
+    @GetMapping("/admin/{shopId}/documents")
+    @Operation(summary = "Donne les liens des pièces justificatives, valables 10 minutes")
+    public List<String> getDocumentUrls(@PathVariable UUID shopId) {
+        return shopPortIn.getDocumentUrls(shopId);
+    }
 }

@@ -147,6 +147,15 @@ class ShopControllerTest {
     }
 
     @Test
+    void testGetDocumentUrlsShouldReturnLinks() throws Exception {
+        when(shopPortIn.getDocumentUrls(SHOP_ID)).thenReturn(List.of("http://garage/kbis.pdf"));
+
+        mockMvc.perform(get("/shops/admin/" + SHOP_ID + "/documents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").value("http://garage/kbis.pdf"));
+    }
+
+    @Test
     void testListCategoriesShouldReturnCategories() throws Exception {
         UUID categoryId = UUID.randomUUID();
         when(categoryPortIn.listCategories()).thenReturn(List.of(new CategoryModel(categoryId, "Café")));

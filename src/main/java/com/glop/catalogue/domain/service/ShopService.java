@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.InputStream;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,5 +79,17 @@ public class ShopService implements ShopPortIn {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Commerce introuvable.");
         }
         fileStorage.upload("shops/" + shopId + "/documents/" + UUID.randomUUID() + extension, content, size, contentType);
+    }
+
+    @Override
+    public List<String> getDocumentUrls(UUID shopId) {
+        if (shopPortOut.findById(shopId) == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Commerce introuvable.");
+        }
+        List<String> urls = new ArrayList<>();
+        for (String key : fileStorage.list("shops/" + shopId + "/documents/")) {
+            urls.add(fileStorage.presignedDownloadUrl(key, Duration.ofMinutes(10)).toString());
+        }
+        return urls;
     }
 }

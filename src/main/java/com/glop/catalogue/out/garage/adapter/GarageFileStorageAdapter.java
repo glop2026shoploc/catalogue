@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -22,5 +23,10 @@ public class GarageFileStorageAdapter implements FileStorage {
     @Override
     public URL presignedDownloadUrl(String filePath, Duration urlValidity) {
         return garageRepository.presignedDownloadUrl(filePath,urlValidity);
+    }
+
+    @Override
+    public List<String> list(String prefix) {
+        return garageRepository.list(prefix);
     }
 }

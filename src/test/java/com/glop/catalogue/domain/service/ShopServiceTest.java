@@ -17,6 +17,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.net.URL;
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -187,5 +189,30 @@ class ShopServiceTest {
                 .hasMessageContaining("Commerce introuvable.");
 
         verify(fileStorage, never()).upload(any(), any(), anyLong(), any());
+    }
+
+    @Test
+    void testGetDocumentUrlsShouldReturnOneLinkPerFile() throws Exception {
+        UUID shopId = UUID.randomUUID();
+        String key = "shops/" + shopId + "/documents/kbis.pdf";
+        when(shopPortOut.findById(shopId)).thenReturn(shop);
+        when(fileStorage.list("shops/" + shopId + "/documents/")).thenReturn(List.of(key));
+        when(fileStorage.presignedDownloadUrl(key, Duration.ofMinutes(10))).thenReturn(new URL("http://garage/kbis.pdf"));
+
+        List<String> result = shopService.getDocumentUrls(shopId);
+
+        assertThat(result).containsExactly("http://garage/kbis.pdf");
+    }
+
+    @Test
+    void testGetDocumentUrlsShouldThrowWhenShopNotFound() {
+        UUID shopId = UUID.randomUUID();
+        when(shopPortOut.findById(shopId)).thenReturn(null);
+
+        assertThatThrownBy(() -> shopService.getDocumentUrls(shopId))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Commerce introuvable.");
+
+        verifyNoInteractions(fileStorage);
     }
 }

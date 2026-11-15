@@ -16,4 +16,6 @@ public interface ShopPortIn {
     ShopModel updateStatus(UUID shopId, ShopStatus status);
 
     void uploadDocument(UUID shopId, InputStream content, long size, String contentType);
+
+    List<String> getDocumentUrls(UUID shopId);
 }

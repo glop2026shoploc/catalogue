@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.io.IOException;
@@ -12,6 +14,8 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,6 +50,15 @@ public class GarageRepository{
                         .signatureDuration(validity)
                         .getObjectRequest(g -> g.bucket(props.bucket()).key(key)))
                 .url();
+    }
+
+    public List<String> list(String prefix) {
+        ListObjectsV2Response response = s3Client.listObjectsV2(r -> r.bucket(props.bucket()).prefix(prefix));
+        List<String> keys = new ArrayList<>();
+        for (S3Object object : response.contents()) {
+            keys.add(object.key());
+        }
+        return keys;
     }
 
 }
