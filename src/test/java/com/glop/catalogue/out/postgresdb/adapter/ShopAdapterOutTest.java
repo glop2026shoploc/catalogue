@@ -96,4 +96,19 @@ class ShopAdapterOutTest {
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getName()).isEqualTo("MonCommerce");
     }
+
+    @Test
+    void testUpdateStatusShouldSaveShopWithNewStatus() {
+        UUID shopId = UUID.randomUUID();
+        ShopEntity entity = new ShopEntity();
+        entity.setShopId(shopId);
+        entity.setStatus(ShopStatus.WAITING);
+        when(shopRepository.findByShopId(shopId)).thenReturn(entity);
+        when(shopRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ShopModel result = adapter.updateStatus(shopId, ShopStatus.VALIDATED);
+
+        assertThat(entity.getStatus()).isEqualTo(ShopStatus.VALIDATED);
+        assertThat(result.getStatus()).isEqualTo(ShopStatus.VALIDATED);
+    }
 }

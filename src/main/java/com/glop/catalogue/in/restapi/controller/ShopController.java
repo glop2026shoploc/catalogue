@@ -1,5 +1,6 @@
 package com.glop.catalogue.in.restapi.controller;
 
+import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.ShopPortIn;
 import com.glop.catalogue.in.restapi.mapper.ShopInMapper;
 import com.glop.catalogue.in.restapi.payload.shop.ShopCreationPayload;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shops")
@@ -31,5 +33,11 @@ public class ShopController {
     @Operation(summary = "Liste les commerces en attente de validation")
     public List<ShopPayload> listWaiting() {
         return shopInMapper.toShopPayloads(shopPortIn.listWaiting());
+    }
+
+    @PatchMapping("/admin/{shopId}/status")
+    @Operation(summary = "Accepte ou refuse un commerce en attente")
+    public ShopPayload updateStatus(@PathVariable UUID shopId, @RequestParam ShopStatus status) {
+        return shopInMapper.toShopPayload(shopPortIn.updateStatus(shopId, status));
     }
 }

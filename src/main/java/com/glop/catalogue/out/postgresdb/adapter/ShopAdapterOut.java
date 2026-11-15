@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -37,5 +38,17 @@ public class ShopAdapterOut implements ShopPortOut {
     @Override
     public List<ShopModel> findByStatus(ShopStatus status) {
         return shopOutMapper.toShopModels(shopRepository.findByStatus(status));
+    }
+
+    @Override
+    public ShopModel findById(UUID shopId) {
+        return shopOutMapper.toShopModel(shopRepository.findByShopId(shopId));
+    }
+
+    @Override
+    public ShopModel updateStatus(UUID shopId, ShopStatus status) {
+        ShopEntity entity = shopRepository.findByShopId(shopId);
+        entity.setStatus(status);
+        return shopOutMapper.toShopModel(shopRepository.save(entity));
     }
 }

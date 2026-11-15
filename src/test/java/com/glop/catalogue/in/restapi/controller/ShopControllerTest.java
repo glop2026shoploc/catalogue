@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -112,6 +113,24 @@ class ShopControllerTest {
                 .andExpect(jsonPath("$[0].shopId").value(SHOP_ID.toString()))
                 .andExpect(jsonPath("$[0].name").value("MonCommerce"))
                 .andExpect(jsonPath("$[0].status").value("WAITING"));
+    }
+
+    @Test
+    void testUpdateStatusShouldReturnShopWithNewStatus() throws Exception {
+        ShopModel shop = ShopModel.builder().shopId(SHOP_ID).status(ShopStatus.VALIDATED).build();
+        when(shopPortIn.updateStatus(SHOP_ID, ShopStatus.VALIDATED)).thenReturn(shop);
+
+        mockMvc.perform(patch("/shops/admin/" + SHOP_ID + "/status").param("status", "VALIDATED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("VALIDATED"));
+    }
+
+    @Test
+    void testUpdateStatusWithUnknownStatusShouldReturn400() throws Exception {
+        mockMvc.perform(patch("/shops/admin/" + SHOP_ID + "/status").param("status", "OK"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(shopPortIn);
     }
 
     @Test

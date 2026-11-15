@@ -11,4 +11,6 @@ public interface ShopRepository extends JpaRepository<ShopEntity, UUID> {
     boolean existsBySiretNumber(String siretNumber);
 
     List<ShopEntity> findByStatus(ShopStatus status);
+
+    ShopEntity findByShopId(UUID shopId);
 }

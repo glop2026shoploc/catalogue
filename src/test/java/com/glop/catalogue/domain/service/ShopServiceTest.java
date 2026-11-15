@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -84,5 +85,51 @@ class ShopServiceTest {
         List<ShopModel> result = shopService.listWaiting();
 
         assertThat(result).containsExactly(shop);
+    }
+
+    @Test
+    void testUpdateStatusShouldThrowWhenNewStatusIsWaiting() {
+        UUID shopId = UUID.randomUUID();
+
+        assertThatThrownBy(() -> shopService.updateStatus(shopId, ShopStatus.WAITING))
+                .isInstanceOf(ResponseStatusException.class);
+
+        verify(shopPortOut, never()).updateStatus(any(), any());
+    }
+
+    @Test
+    void testUpdateStatusShouldThrowWhenShopNotFound() {
+        UUID shopId = UUID.randomUUID();
+        when(shopPortOut.findById(shopId)).thenReturn(null);
+
+        assertThatThrownBy(() -> shopService.updateStatus(shopId, ShopStatus.VALIDATED))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Commerce introuvable.");
+
+        verify(shopPortOut, never()).updateStatus(any(), any());
+    }
+
+    @Test
+    void testUpdateStatusShouldThrowWhenAlreadyValidatedOrRejected() {
+        UUID shopId = UUID.randomUUID();
+        shop.setStatus(ShopStatus.REJECTED);
+        when(shopPortOut.findById(shopId)).thenReturn(shop);
+
+        assertThatThrownBy(() -> shopService.updateStatus(shopId, ShopStatus.VALIDATED))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("déjà été validé ou refusé");
+
+        verify(shopPortOut, never()).updateStatus(any(), any());
+    }
+
+    @Test
+    void testUpdateStatusShouldSaveNewStatus() {
+        UUID shopId = UUID.randomUUID();
+        shop.setStatus(ShopStatus.WAITING);
+        when(shopPortOut.findById(shopId)).thenReturn(shop);
+
+        shopService.updateStatus(shopId, ShopStatus.VALIDATED);
+
+        verify(shopPortOut).updateStatus(shopId, ShopStatus.VALIDATED);
     }
 }
