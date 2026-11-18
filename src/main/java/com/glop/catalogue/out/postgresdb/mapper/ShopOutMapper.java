@@ -21,6 +21,8 @@ public interface ShopOutMapper {
     @Mapping(target = "categoryIds", source = "categories")
     ShopModel toShopModel(ShopEntity shopEntity);
 
+    List<ShopModel> toShopModels(List<ShopEntity> shopEntities);
+
     ShopAddressModel toShopAddressModel(AddressEntity addressEntity);
 
     /** Les catégories sont rattachées par l'adapter. */

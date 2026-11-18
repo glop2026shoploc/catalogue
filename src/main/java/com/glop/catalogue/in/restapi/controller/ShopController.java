@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/shops")
 @RequiredArgsConstructor
@@ -23,5 +26,12 @@ public class ShopController {
     @Operation(summary = "Crée un commerce en attente de validation")
     public ShopPayload create(@Valid @RequestBody ShopCreationPayload payload) {
         return shopInMapper.toShopPayload(shopPortIn.create(shopInMapper.toShopModel(payload)));
+    }
+
+    /** GET /shops?cityId=(la ville de l'utilisateur) */
+    @GetMapping
+    @Operation(summary = "Liste les commerces validés d'une ville, triés par nom")
+    public List<ShopPayload> listByCity(@RequestParam UUID cityId) {
+        return shopInMapper.toShopPayloads(shopPortIn.listValidatedByCity(cityId));
     }
 }
