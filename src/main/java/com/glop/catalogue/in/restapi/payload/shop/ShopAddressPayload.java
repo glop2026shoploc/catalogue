@@ -1,6 +1,8 @@
 package com.glop.catalogue.in.restapi.payload.shop;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -30,4 +32,14 @@ public class ShopAddressPayload {
     @NotNull
     @Schema(description = "Identifiant de la ville (référentiel du service users)", requiredMode = Schema.RequiredMode.REQUIRED)
     private UUID cityId;
+
+    @DecimalMin("-90")
+    @DecimalMax("90")
+    @Schema(description = "Latitude en degrés décimaux", example = "50.6292")
+    private Double latitude;
+
+    @DecimalMin("-180")
+    @DecimalMax("180")
+    @Schema(description = "Longitude en degrés décimaux", example = "3.0573")
+    private Double longitude;
 }
