@@ -45,5 +45,8 @@ public interface ShopOutMapper {
     @Mapping(target = "openingHoursId", ignore = true)
     @Mapping(target = "shop", ignore = true)
     OpeningHoursEntity toOpeningHoursEntity(OpeningHoursModel openingHoursModel);
+
     OpeningHoursModel toOpeningHoursModel(OpeningHoursEntity openingHoursEntity);
+
+    List<OpeningHoursModel> toOpeningHoursModels(List<OpeningHoursEntity> openingHoursEntity);
 }
