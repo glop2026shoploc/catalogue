@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface ShopRepository extends JpaRepository<ShopEntity, UUID> {
     boolean existsBySiretNumber(String siretNumber);
+
+    ShopEntity findByShopId(UUID shopId);
 }

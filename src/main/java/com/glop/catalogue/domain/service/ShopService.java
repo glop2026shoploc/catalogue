@@ -7,8 +7,10 @@ import com.glop.catalogue.domain.port.in.ShopPortIn;
 import com.glop.catalogue.domain.port.out.CategoryPortOut;
 import com.glop.catalogue.domain.port.out.ShopPortOut;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,5 +33,14 @@ public class ShopService implements ShopPortIn {
         shop.setCategoryIds(categoryIds);
         shop.setStatus(ShopStatus.WAITING);
         return shopPortOut.create(shop);
+    }
+
+    @Override
+    public ShopModel getValidatedShop(UUID shopId) {
+        ShopModel shop = shopPortOut.findById(shopId);
+        if (shop == null || shop.getStatus() != ShopStatus.VALIDATED) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Commerce introuvable.");
+        }
+        return shop;
     }
 }

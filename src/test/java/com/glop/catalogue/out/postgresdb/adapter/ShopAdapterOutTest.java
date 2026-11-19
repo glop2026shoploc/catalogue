@@ -83,4 +83,18 @@ class ShopAdapterOutTest {
         verifyNoInteractions(categoryRepository);
         assertThat(created.getCategoryIds()).isEmpty();
     }
+
+    @Test
+    void testFindByIdShouldReturnShopFromRepository() {
+        UUID shopId = UUID.randomUUID();
+        ShopEntity entity = new ShopEntity();
+        entity.setShopId(shopId);
+        entity.setName("MonCommerce");
+        when(shopRepository.findByShopId(shopId)).thenReturn(entity);
+
+        ShopModel result = adapter.findById(shopId);
+
+        assertThat(result.getShopId()).isEqualTo(shopId);
+        assertThat(result.getName()).isEqualTo("MonCommerce");
+    }
 }

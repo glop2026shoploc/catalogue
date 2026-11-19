@@ -15,9 +15,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -111,5 +113,24 @@ class ShopControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].categoryId").value(categoryId.toString()))
                 .andExpect(jsonPath("$[0].name").value("Café"));
+    }
+
+    @Test
+    void testGetShopShouldReturnShop() throws Exception {
+        ShopModel shop = ShopModel.builder().shopId(SHOP_ID).name("MonCommerce").status(ShopStatus.VALIDATED).build();
+        when(shopPortIn.getValidatedShop(SHOP_ID)).thenReturn(shop);
+
+        mockMvc.perform(get("/shops/" + SHOP_ID))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.shopId").value(SHOP_ID.toString()))
+                .andExpect(jsonPath("$.name").value("MonCommerce"));
+    }
+
+    @Test
+    void testGetShopShouldReturn404WhenNotFound() throws Exception {
+        when(shopPortIn.getValidatedShop(SHOP_ID)).thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Commerce introuvable."));
+
+        mockMvc.perform(get("/shops/" + SHOP_ID))
+                .andExpect(status().isNotFound());
     }
 }

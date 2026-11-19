@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -75,5 +76,31 @@ class ShopServiceTest {
         shopService.create(shop);
 
         verifyNoInteractions(categoryPortOut);
+    }
+
+    @Test
+    void testGetValidatedShopShouldReturnValidatedShop() {
+        UUID shopId = UUID.randomUUID();
+        shop.setStatus(ShopStatus.VALIDATED);
+        when(shopPortOut.findById(shopId)).thenReturn(shop);
+
+        assertThat(shopService.getValidatedShop(shopId)).isEqualTo(shop);
+    }
+
+    @Test
+    void testGetValidatedShopShouldThrowWhenShopIsNotValidated() {
+        UUID shopId = UUID.randomUUID();
+        shop.setStatus(ShopStatus.WAITING);
+        when(shopPortOut.findById(shopId)).thenReturn(shop);
+
+        assertThatThrownBy(() -> shopService.getValidatedShop(shopId)).isInstanceOf(ResponseStatusException.class);
+    }
+
+    @Test
+    void testGetValidatedShopShouldThrowWhenShopDoesNotExist() {
+        UUID shopId = UUID.randomUUID();
+        when(shopPortOut.findById(shopId)).thenReturn(null);
+
+        assertThatThrownBy(() -> shopService.getValidatedShop(shopId)).isInstanceOf(ResponseStatusException.class);
     }
 }

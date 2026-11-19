@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -30,5 +31,10 @@ public class ShopAdapterOut implements ShopPortOut {
             entity.setCategories(new HashSet<>(categoryRepository.findAllById(shop.getCategoryIds())));
         }
         return shopOutMapper.toShopModel(shopRepository.saveAndFlush(entity));
+    }
+
+    @Override
+    public ShopModel findById(UUID shopId) {
+        return shopOutMapper.toShopModel(shopRepository.findByShopId(shopId));
     }
 }
