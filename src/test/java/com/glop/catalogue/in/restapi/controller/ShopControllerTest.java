@@ -3,10 +3,12 @@ package com.glop.catalogue.in.restapi.controller;
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
 import com.glop.catalogue.domain.model.shop.CategoryModel;
 import com.glop.catalogue.domain.model.shop.OpeningHoursModel;
+import com.glop.catalogue.domain.model.shop.ProductModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.CategoryPortIn;
 import com.glop.catalogue.domain.port.in.OpeningHoursPortIn;
+import com.glop.catalogue.domain.port.in.ProductPortIn;
 import com.glop.catalogue.domain.port.in.ShopPortIn;
 import com.glop.catalogue.in.restapi.config.error.GlobalControllerExceptionHandler;
 import com.glop.catalogue.in.restapi.mapper.ShopInMapperImpl;
@@ -23,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
@@ -50,6 +53,8 @@ class ShopControllerTest {
     private CategoryPortIn categoryPortIn;
     @Mock
     private OpeningHoursPortIn openingHoursPortIn;
+    @Mock
+    private ProductPortIn productPortIn;
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -57,7 +62,7 @@ class ShopControllerTest {
         ShopInMapperImpl mapper = new ShopInMapperImpl();
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new ShopController(shopPortIn, mapper), new CategoryController(categoryPortIn, mapper),
-                        new OpeningHoursController(openingHoursPortIn, mapper))
+                        new OpeningHoursController(openingHoursPortIn, mapper), new ProductController(productPortIn, mapper))
                 .setControllerAdvice(new GlobalControllerExceptionHandler())
                 .build();
     }
@@ -150,5 +155,18 @@ class ShopControllerTest {
                 .andExpect(jsonPath("$[0].dayOfWeek").value(1))
                 .andExpect(jsonPath("$[0].openTime").value("08:00:00"))
                 .andExpect(jsonPath("$[0].closeTime").value("12:30:00"));
+    }
+
+    @Test
+    void testListProductsShouldReturnProducts() throws Exception {
+        when(productPortIn.listProducts(SHOP_ID))
+                .thenReturn(List.of(new ProductModel(UUID.randomUUID(), "Croissant", 0, new BigDecimal("1.20"), null, 3)));
+
+        mockMvc.perform(get("/shops/" + SHOP_ID + "/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Croissant"))
+                .andExpect(jsonPath("$[0].price").value(1.2))
+                .andExpect(jsonPath("$[0].pointsPrice").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$[0].earnedPoints").value(3));
     }
 }
