@@ -60,7 +60,7 @@ class ShopDataRepositoryTest {
         product.setShop(shop);
         productRepository.save(product);
 
-        List<OpeningHoursEntity> foundHours = openingHoursRepository.findByShopShopId(shopId);
+        List<OpeningHoursEntity> foundHours = openingHoursRepository.findByShopShopIdOrderByDayOfWeekAscOpenTimeAsc(shopId);
         assertThat(foundHours).hasSize(1);
         assertThat(foundHours.get(0).getDayOfWeek()).isEqualTo(1);
         assertThat(foundHours.get(0).getCloseTime()).isEqualTo(LocalTime.of(12, 30));

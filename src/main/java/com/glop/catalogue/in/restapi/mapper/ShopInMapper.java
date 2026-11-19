@@ -1,8 +1,10 @@
 package com.glop.catalogue.in.restapi.mapper;
 
 import com.glop.catalogue.domain.model.shop.CategoryModel;
+import com.glop.catalogue.domain.model.shop.OpeningHoursModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.in.restapi.payload.shop.CategoryPayload;
+import com.glop.catalogue.in.restapi.payload.shop.OpeningHoursPayload;
 import com.glop.catalogue.in.restapi.payload.shop.ShopCreationPayload;
 import com.glop.catalogue.in.restapi.payload.shop.ShopPayload;
 import org.mapstruct.Mapper;
@@ -22,4 +24,6 @@ public interface ShopInMapper {
     ShopPayload toShopPayload(ShopModel shopModel);
 
     List<CategoryPayload> toCategoryPayloads(List<CategoryModel> categoryModels);
+
+    List<OpeningHoursPayload> toOpeningHoursPayloads(List<OpeningHoursModel> openingHoursModels);
 }

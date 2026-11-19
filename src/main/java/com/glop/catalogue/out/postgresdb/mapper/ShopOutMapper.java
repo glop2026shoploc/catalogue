@@ -1,10 +1,12 @@
 package com.glop.catalogue.out.postgresdb.mapper;
 
 import com.glop.catalogue.domain.model.shop.CategoryModel;
+import com.glop.catalogue.domain.model.shop.OpeningHoursModel;
 import com.glop.catalogue.domain.model.shop.ShopAddressModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.out.postgresdb.entity.AddressEntity;
 import com.glop.catalogue.out.postgresdb.entity.CategoryEntity;
+import com.glop.catalogue.out.postgresdb.entity.OpeningHoursEntity;
 import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -35,6 +37,8 @@ public interface ShopOutMapper {
     CategoryModel toCategoryModel(CategoryEntity categoryEntity);
 
     List<CategoryModel> toCategoryModels(List<CategoryEntity> categoryEntities);
+
+    List<OpeningHoursModel> toOpeningHoursModels(List<OpeningHoursEntity> openingHoursEntities);
 
     default List<UUID> toCategoryIds(Set<CategoryEntity> categories) {
         return categories == null ? List.of() : categories.stream().map(CategoryEntity::getCategoryId).toList();

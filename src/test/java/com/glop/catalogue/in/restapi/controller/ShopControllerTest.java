@@ -2,9 +2,11 @@ package com.glop.catalogue.in.restapi.controller;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
 import com.glop.catalogue.domain.model.shop.CategoryModel;
+import com.glop.catalogue.domain.model.shop.OpeningHoursModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.CategoryPortIn;
+import com.glop.catalogue.domain.port.in.OpeningHoursPortIn;
 import com.glop.catalogue.domain.port.in.ShopPortIn;
 import com.glop.catalogue.in.restapi.config.error.GlobalControllerExceptionHandler;
 import com.glop.catalogue.in.restapi.mapper.ShopInMapperImpl;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,13 +48,16 @@ class ShopControllerTest {
     private ShopPortIn shopPortIn;
     @Mock
     private CategoryPortIn categoryPortIn;
+    @Mock
+    private OpeningHoursPortIn openingHoursPortIn;
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
         ShopInMapperImpl mapper = new ShopInMapperImpl();
         mockMvc = MockMvcBuilders
-                .standaloneSetup(new ShopController(shopPortIn, mapper), new CategoryController(categoryPortIn, mapper))
+                .standaloneSetup(new ShopController(shopPortIn, mapper), new CategoryController(categoryPortIn, mapper),
+                        new OpeningHoursController(openingHoursPortIn, mapper))
                 .setControllerAdvice(new GlobalControllerExceptionHandler())
                 .build();
     }
@@ -132,5 +138,17 @@ class ShopControllerTest {
 
         mockMvc.perform(get("/shops/" + SHOP_ID))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testListOpeningHoursShouldReturnOpeningHours() throws Exception {
+        when(openingHoursPortIn.listOpeningHours(SHOP_ID))
+                .thenReturn(List.of(new OpeningHoursModel(1, LocalTime.of(8, 0), LocalTime.of(12, 30))));
+
+        mockMvc.perform(get("/shops/" + SHOP_ID + "/opening-hours"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].dayOfWeek").value(1))
+                .andExpect(jsonPath("$[0].openTime").value("08:00:00"))
+                .andExpect(jsonPath("$[0].closeTime").value("12:30:00"));
     }
 }

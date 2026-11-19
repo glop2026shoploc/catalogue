@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OpeningHoursRepository extends JpaRepository<OpeningHoursEntity, UUID> {
-    List<OpeningHoursEntity> findByShopShopId(UUID shopId);
+    List<OpeningHoursEntity> findByShopShopIdOrderByDayOfWeekAscOpenTimeAsc(UUID shopId);
 }
