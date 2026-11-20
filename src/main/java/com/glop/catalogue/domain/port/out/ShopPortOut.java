@@ -19,7 +19,7 @@ public interface ShopPortOut {
 
     boolean exists(UUID shopId);
 
-    Optional<ShopModel> findById(UUID shopId);
+    ShopModel findById(UUID shopId);
 
     List<OpeningHoursModel> findOpeningHours(UUID shopId);
 
