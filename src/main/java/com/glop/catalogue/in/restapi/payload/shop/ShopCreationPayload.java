@@ -8,8 +8,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -25,8 +23,9 @@ public class ShopCreationPayload {
     @Schema(description = "Numéro SIRET (14 chiffres)", example = "12345678900013", requiredMode = Schema.RequiredMode.REQUIRED)
     private String siret;
 
-    @Schema(description = "Catégories du commerce ; les identifiants inconnus sont ignorés")
-    private List<UUID> categoryIds = new ArrayList<>();
+    @NotNull
+    @Schema(description = "Catégorie du commerce", requiredMode = Schema.RequiredMode.REQUIRED)
+    private UUID categoryId;
 
     @NotNull
     @Valid

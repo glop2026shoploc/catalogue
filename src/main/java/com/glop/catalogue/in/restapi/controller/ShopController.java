@@ -9,6 +9,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Parameter;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/shops")
@@ -23,5 +26,12 @@ public class ShopController {
     @Operation(summary = "Crée un commerce en attente de validation")
     public ShopPayload create(@Valid @RequestBody ShopCreationPayload payload) {
         return shopInMapper.toShopPayload(shopPortIn.create(shopInMapper.toShopModel(payload)));
+    }
+
+    @GetMapping
+    @Operation(summary = "Liste les commerces validés, filtrables par catégorie")
+    public List<ShopPayload> findShops(
+            @RequestParam(required = false) @Parameter(description = "Identifiant de catégorie") UUID categoryId) {
+        return shopInMapper.toShopPayloads(shopPortIn.findValidatedShops(categoryId));
     }
 }

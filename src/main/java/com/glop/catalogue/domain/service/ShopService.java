@@ -1,6 +1,7 @@
 package com.glop.catalogue.domain.service;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
+import com.glop.catalogue.domain.config.exception.CategoryNotFoundException;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.ShopPortIn;
@@ -25,11 +26,18 @@ public class ShopService implements ShopPortIn {
         if (shopPortOut.existsBySiret(shop.getSiret())) {
             throw new ShopAlreadyExistsException("Un commerce existe déjà avec ce SIRET.");
         }
-        List<UUID> categoryIds = shop.getCategoryIds() == null || shop.getCategoryIds().isEmpty()
-                ? List.of()
-                : categoryPortOut.findExistingIds(shop.getCategoryIds());
-        shop.setCategoryIds(categoryIds);
+        if (shop.getCategory() == null || shop.getCategory().getCategoryId() == null
+                || !categoryPortOut.existsById(shop.getCategory().getCategoryId())) {
+            throw new CategoryNotFoundException("La catégorie demandée n'existe pas.");
+        }
         shop.setStatus(ShopStatus.WAITING);
         return shopPortOut.create(shop);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ShopModel> findValidatedShops(UUID categoryId) {
+        if (categoryId == null) return shopPortOut.findAllValidated();
+        return shopPortOut.findValidatedByCategoryId(categoryId);
     }
 }

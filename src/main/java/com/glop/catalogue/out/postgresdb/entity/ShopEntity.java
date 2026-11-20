@@ -7,8 +7,6 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -38,9 +36,7 @@ public class ShopEntity {
     @JoinColumn(name = "address_id", nullable = false, unique = true)
     private AddressEntity address;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "shop_category",
-            joinColumns = @JoinColumn(name = "shop_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<CategoryEntity> categories = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity category;
 }

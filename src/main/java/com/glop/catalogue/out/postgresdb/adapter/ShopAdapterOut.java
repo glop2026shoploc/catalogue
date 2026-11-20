@@ -9,7 +9,9 @@ import com.glop.catalogue.out.postgresdb.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import com.glop.catalogue.domain.model.shop.ShopStatus;
 
 @Component
 @RequiredArgsConstructor
@@ -26,9 +28,18 @@ public class ShopAdapterOut implements ShopPortOut {
     @Override
     public ShopModel create(ShopModel shop) {
         ShopEntity entity = shopOutMapper.toShopEntity(shop);
-        if (shop.getCategoryIds() != null && !shop.getCategoryIds().isEmpty()) {
-            entity.setCategories(new HashSet<>(categoryRepository.findAllById(shop.getCategoryIds())));
-        }
+        entity.setCategory(categoryRepository.getReferenceById(shop.getCategory().getCategoryId()));
         return shopOutMapper.toShopModel(shopRepository.saveAndFlush(entity));
+    }
+
+    @Override
+    public List<ShopModel> findAllValidated() {
+        return shopOutMapper.toShopModels(shopRepository.findByStatusOrderByNameAsc(ShopStatus.VALIDATED));
+    }
+
+    @Override
+    public List<ShopModel> findValidatedByCategoryId(UUID categoryId) {
+        return shopOutMapper.toShopModels(shopRepository.findByStatusAndCategory_CategoryIdOrderByNameAsc(
+                ShopStatus.VALIDATED, categoryId));
     }
 }

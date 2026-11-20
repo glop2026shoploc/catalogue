@@ -1,7 +1,9 @@
 package com.glop.catalogue.domain.service;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
+import com.glop.catalogue.domain.config.exception.CategoryNotFoundException;
 import com.glop.catalogue.domain.model.shop.ShopAddressModel;
+import com.glop.catalogue.domain.model.shop.CategoryModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.out.CategoryPortOut;
@@ -40,21 +42,30 @@ class ShopServiceTest {
         shop = ShopModel.builder()
                 .name("MonCommercant")
                 .siret("12345678900013")
-                .categoryIds(List.of(KNOWN_CATEGORY, UNKNOWN_CATEGORY))
+                .category(new CategoryModel(KNOWN_CATEGORY, "Boulangerie"))
                 .address(ShopAddressModel.builder().road("rue de la République").cityId(UUID.randomUUID()).build())
                 .build();
     }
 
     @Test
-    void testCreateShouldKeepOnlyKnownCategoriesAndSetWaitingStatus() {
+    void testCreateShouldSetWaitingStatusWhenCategoryExists() {
         when(shopPortOut.existsBySiret("12345678900013")).thenReturn(false);
-        when(categoryPortOut.findExistingIds(shop.getCategoryIds())).thenReturn(List.of(KNOWN_CATEGORY));
+        when(categoryPortOut.existsById(KNOWN_CATEGORY)).thenReturn(true);
         when(shopPortOut.create(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         ShopModel created = shopService.create(shop);
 
-        assertThat(created.getCategoryIds()).containsExactly(KNOWN_CATEGORY);
+        assertThat(created.getCategory().getCategoryId()).isEqualTo(KNOWN_CATEGORY);
         assertThat(created.getStatus()).isEqualTo(ShopStatus.WAITING);
+    }
+
+    @Test
+    void testCreateShouldRejectUnknownCategory() {
+        when(shopPortOut.existsBySiret("12345678900013")).thenReturn(false);
+        when(categoryPortOut.existsById(KNOWN_CATEGORY)).thenReturn(false);
+
+        assertThatThrownBy(() -> shopService.create(shop)).isInstanceOf(CategoryNotFoundException.class);
+        verify(shopPortOut, never()).create(any());
     }
 
     @Test
@@ -67,13 +78,26 @@ class ShopServiceTest {
     }
 
     @Test
-    void testCreateWithoutCategoriesShouldNotQueryCategories() {
-        shop.setCategoryIds(List.of());
+    void testCreateWithoutCategoryShouldRejectRequest() {
         when(shopPortOut.existsBySiret(any())).thenReturn(false);
-        when(shopPortOut.create(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        shopService.create(shop);
+        shop.setCategory(null);
+        assertThatThrownBy(() -> shopService.create(shop)).isInstanceOf(CategoryNotFoundException.class);
 
-        verifyNoInteractions(categoryPortOut);
+        verify(shopPortOut, never()).create(any());
+    }
+
+    @Test
+    void testFindValidatedShopsUsesCategoryFilterWhenProvided() {
+        shopService.findValidatedShops(KNOWN_CATEGORY);
+        verify(shopPortOut).findValidatedByCategoryId(KNOWN_CATEGORY);
+        verify(shopPortOut, never()).findAllValidated();
+    }
+
+    @Test
+    void testFindValidatedShopsReturnsAllWhenNoCategoryProvided() {
+        shopService.findValidatedShops(null);
+        verify(shopPortOut).findAllValidated();
+        verify(shopPortOut, never()).findValidatedByCategoryId(any());
     }
 }
