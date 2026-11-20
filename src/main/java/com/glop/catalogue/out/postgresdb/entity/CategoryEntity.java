@@ -1,21 +1,22 @@
 package com.glop.catalogue.out.postgresdb.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "category")
 @Getter
 @Setter
-@NoArgsConstructor
 public class CategoryEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "category_id")
     private UUID categoryId;
 
+    @Column(name = "name", nullable = false, unique = true, length = 100)
     private String name;
 }
