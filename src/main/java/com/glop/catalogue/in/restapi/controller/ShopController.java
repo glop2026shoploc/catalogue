@@ -7,25 +7,23 @@ import com.glop.catalogue.in.restapi.payload.shop.OpeningHoursPayload;
 import com.glop.catalogue.in.restapi.payload.shop.ShopCreationPayload;
 import com.glop.catalogue.in.restapi.payload.shop.ShopPayload;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/shops")
 @RequiredArgsConstructor
-/**
- * AI
- */
 public class ShopController {
+    private static final String OWNER = "OWNER";
+
     private final ShopPortIn shopPortIn;
     private final ShopInMapper shopInMapper;
 
@@ -41,20 +39,20 @@ public class ShopController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Mettre un magasin en favoris")
     @PreAuthorize("hasRole('CLIENT')")
-    public void addToFavorite(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable(name = "id") UUID shopId){
+    public void addToFavorite(@AuthenticationPrincipal AuthenticatedUser user,
+                              @PathVariable(name = "id") UUID shopId) {
         shopPortIn.addClientFavoriteShop(shopId, user.clientId());
     }
-    
+
     @PutMapping("/{id}/opening-hours")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Modifie les horaires d'un commerçant et notifie les clients qui ont le commerce en favori")
-    @PreAuthorize("hasRole('MERCHANT', 'OWNER')")
-    public void updateOpeningHours(@AuthenticationPrincipal AuthenticatedUser user, 
-                                   @PathVariable(name= "id") UUID shopID,
-                                   @RequestBody List<@Valid OpeningHoursPayload> payload
-                                   ) {
-        if (!shopId.equals(user.shopId())) {
-            throw new AccessDeniedException("Ce commerce ne vous appartient pas");
+    @Operation(summary = "Modifie les horaires d'un commerce et notifie les clients qui l'ont en favori")
+    @PreAuthorize("hasRole('MERCHANT')")
+    public void updateOpeningHours(@AuthenticationPrincipal AuthenticatedUser user,
+                                   @PathVariable(name = "id") UUID shopId,
+                                   @RequestBody List<@Valid OpeningHoursPayload> payload) {
+        if (!shopId.equals(user.shopId()) || !OWNER.equals(user.employeeRole())) {
+            throw new AccessDeniedException("Seul le propriétaire du commerce peut modifier ses horaires.");
         }
         shopPortIn.updateOpeningHours(shopId, shopInMapper.toOpeningHoursModels(payload));
     }
