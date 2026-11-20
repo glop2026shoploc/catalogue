@@ -1,8 +1,11 @@
 package com.glop.catalogue.domain.port.in;
 
 import com.glop.catalogue.domain.model.shop.ShopModel;
+import java.util.List;
+import java.util.UUID;
 
 public interface ShopPortIn {
     /** Crée un commerce en attente de validation */
     ShopModel create(ShopModel shop);
+    List<ShopModel> findValidatedShops(UUID categoryId);
 }

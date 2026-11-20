@@ -17,9 +17,13 @@ public interface ShopInMapper {
     @Mapping(target = "shopId", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "address.addressId", ignore = true)
+    @Mapping(target = "category.categoryId", source = "categoryId")
+    @Mapping(target = "category.name", ignore = true)
     ShopModel toShopModel(ShopCreationPayload payload);
 
     ShopPayload toShopPayload(ShopModel shopModel);
+
+    List<ShopPayload> toShopPayloads(List<ShopModel> shopModels);
 
     List<CategoryPayload> toCategoryPayloads(List<CategoryModel> categoryModels);
 }
