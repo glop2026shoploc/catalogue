@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryAdapterOutTest {
@@ -28,7 +29,7 @@ class CategoryAdapterOutTest {
 
     @BeforeEach
     void setUp() {
-        adapter = new CategoryAdapterOut(categoryRepository, new ShopOutMapperImpl());
+        adapter = new CategoryAdapterOut(categoryRepository, new ShopOutMapperImpl(new com.glop.catalogue.out.postgresdb.mapper.AddressOutMapperImpl()));
         category = new CategoryEntity();
         category.setCategoryId(CATEGORY_ID);
         category.setName("Café");
@@ -44,10 +45,10 @@ class CategoryAdapterOutTest {
     }
 
     @Test
-    void testFindExistingIdsShouldReturnOnlyIdsFoundInDatabase() {
-        UUID unknown = UUID.randomUUID();
-        when(categoryRepository.findAllById(List.of(CATEGORY_ID, unknown))).thenReturn(List.of(category));
+    void testExistsByIdShouldAskRepository() {
+        when(categoryRepository.existsById(CATEGORY_ID)).thenReturn(true);
 
-        assertThat(adapter.findExistingIds(List.of(CATEGORY_ID, unknown))).containsExactly(CATEGORY_ID);
+        assertThat(adapter.existsById(CATEGORY_ID)).isTrue();
+        verify(categoryRepository).existsById(CATEGORY_ID);
     }
 }

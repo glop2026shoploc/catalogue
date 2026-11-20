@@ -2,6 +2,7 @@ package com.glop.catalogue.in.restapi.controller;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
 import com.glop.catalogue.domain.model.shop.CategoryModel;
+import com.glop.catalogue.domain.model.shop.ShopAddressModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.CategoryPortIn;
@@ -35,9 +36,10 @@ class ShopControllerTest {
     private static final UUID SHOP_ID = UUID.randomUUID();
     private static final UUID CITY_ID = UUID.randomUUID();
     private static final String VALID_SHOP = """
-            {"name":"MonCommerce","siret":"12345678900013","categoryIds":[],
+            {"name":"MonCommerce","siret":"12345678900013","categoryId":"%s",
              "address":{"road":"rue de la République","cityId":"%s"}}
-            """.formatted(CITY_ID);
+            """.formatted(UUID.nameUUIDFromBytes("category".getBytes()), CITY_ID);
+    private static final UUID CATEGORY_ID = UUID.nameUUIDFromBytes("category".getBytes());
 
     @Mock
     private ShopPortIn shopPortIn;
@@ -60,6 +62,8 @@ class ShopControllerTest {
             ShopModel shop = invocation.getArgument(0);
             shop.setShopId(SHOP_ID);
             shop.setStatus(ShopStatus.WAITING);
+            shop.setCategory(new CategoryModel(CATEGORY_ID, "Boulangerie"));
+            shop.setAddress(ShopAddressModel.builder().road("rue de la République").cityId(CITY_ID).build());
             return shop;
         });
 
@@ -67,12 +71,41 @@ class ShopControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.shopId").value(SHOP_ID.toString()))
                 .andExpect(jsonPath("$.status").value("WAITING"))
+                .andExpect(jsonPath("$.category.categoryId").value(CATEGORY_ID.toString()))
+                .andExpect(jsonPath("$.category.name").value("Boulangerie"))
                 .andExpect(jsonPath("$.address.cityId").value(CITY_ID.toString()));
 
         ArgumentCaptor<ShopModel> captor = ArgumentCaptor.forClass(ShopModel.class);
         verify(shopPortIn).create(captor.capture());
         assertThat(captor.getValue().getSiret()).isEqualTo("12345678900013");
         assertThat(captor.getValue().getAddress().getRoad()).isEqualTo("rue de la République");
+    }
+
+    @Test
+    void testListShopsPassesCategoryIdAndReturnsShops() throws Exception {
+        when(shopPortIn.findValidatedShops(CATEGORY_ID)).thenReturn(List.of(
+                ShopModel.builder().shopId(SHOP_ID).name("MonCommerce")
+                        .category(new CategoryModel(CATEGORY_ID, "Boulangerie"))
+                        .address(ShopAddressModel.builder().road("rue de la République").build())
+                        .status(ShopStatus.VALIDATED).build()));
+
+        mockMvc.perform(get("/shops").param("categoryId", CATEGORY_ID.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].shopId").value(SHOP_ID.toString()))
+                .andExpect(jsonPath("$[0].category.name").value("Boulangerie"));
+
+        verify(shopPortIn).findValidatedShops(CATEGORY_ID);
+    }
+
+    @Test
+    void testListShopsWithoutCategoryPassesNull() throws Exception {
+        when(shopPortIn.findValidatedShops(null)).thenReturn(List.of());
+
+        mockMvc.perform(get("/shops"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(shopPortIn).findValidatedShops(null);
     }
 
     @Test
@@ -111,5 +144,15 @@ class ShopControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].categoryId").value(categoryId.toString()))
                 .andExpect(jsonPath("$[0].name").value("Café"));
+    }
+
+    @Test
+    void testCreateWithUnknownCategoryShouldReturn400() throws Exception {
+        when(shopPortIn.create(any())).thenThrow(
+                new com.glop.catalogue.domain.config.exception.CategoryNotFoundException("La catégorie demandée n'existe pas."));
+
+        mockMvc.perform(post("/shops").contentType(MediaType.APPLICATION_JSON).content(VALID_SHOP))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("La catégorie demandée n'existe pas."));
     }
 }
