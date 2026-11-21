@@ -30,4 +30,10 @@ public class AddressEntity {
     /** Ville du service users (autre base : pas de relation JPA). */
     @Column(name = "city_id", nullable = false)
     private UUID cityId;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
 }

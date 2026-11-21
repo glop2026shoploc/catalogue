@@ -18,4 +18,6 @@ public class ShopAddressModel {
     private String complement;
     /** Ville du service users. */
     private UUID cityId;
+    private Double latitude;
+    private Double longitude;
 }

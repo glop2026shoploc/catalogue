@@ -32,4 +32,10 @@ public class ShopService implements ShopPortIn {
         shop.setStatus(ShopStatus.WAITING);
         return shopPortOut.create(shop);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ShopModel> listValidatedByCity(UUID cityId) {
+        return shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId);
+    }
 }
