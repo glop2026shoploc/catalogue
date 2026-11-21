@@ -18,4 +18,7 @@ public interface ShopPortIn {
     void uploadDocument(UUID shopId, InputStream content, long size, String contentType);
 
     List<String> getDocumentUrls(UUID shopId);
+
+    /** Commerces validés de la ville donnée, triés par nom. */
+    List<ShopModel> listValidatedByCity(UUID cityId);
 }

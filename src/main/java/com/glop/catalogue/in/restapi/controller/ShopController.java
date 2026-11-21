@@ -59,4 +59,11 @@ public class ShopController {
     public List<String> getDocumentUrls(@PathVariable UUID shopId) {
         return shopPortIn.getDocumentUrls(shopId);
     }
+
+    /** GET /shops?cityId=(la ville de l'utilisateur) */
+    @GetMapping
+    @Operation(summary = "Liste les commerces validés d'une ville, triés par nom")
+    public List<ShopPayload> listByCity(@RequestParam UUID cityId) {
+        return shopInMapper.toShopPayloads(shopPortIn.listValidatedByCity(cityId));
+    }
 }

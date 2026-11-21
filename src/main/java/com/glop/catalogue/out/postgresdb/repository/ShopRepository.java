@@ -2,6 +2,7 @@ package com.glop.catalogue.out.postgresdb.repository;
 
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,4 +14,7 @@ public interface ShopRepository extends JpaRepository<ShopEntity, UUID> {
     List<ShopEntity> findByStatus(ShopStatus status);
 
     ShopEntity findByShopId(UUID shopId);
+
+    @EntityGraph(attributePaths = {"address", "categories"})
+    List<ShopEntity> findByStatusAndAddressCityIdOrderByNameAsc(ShopStatus status, UUID cityId);
 }

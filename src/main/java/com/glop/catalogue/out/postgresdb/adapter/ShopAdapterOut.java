@@ -51,4 +51,9 @@ public class ShopAdapterOut implements ShopPortOut {
         entity.setStatus(status);
         return shopOutMapper.toShopModel(shopRepository.save(entity));
     }
+
+    @Override
+    public List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId) {
+        return shopOutMapper.toShopModels(shopRepository.findByStatusAndAddressCityIdOrderByNameAsc(status, cityId));
+    }
 }

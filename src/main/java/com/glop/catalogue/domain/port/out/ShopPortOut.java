@@ -17,4 +17,7 @@ public interface ShopPortOut {
     ShopModel findById(UUID shopId);
 
     ShopModel updateStatus(UUID shopId, ShopStatus status);
+
+    /** Commerces du statut donné situés dans la ville, triés par nom. */
+    List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId);
 }
