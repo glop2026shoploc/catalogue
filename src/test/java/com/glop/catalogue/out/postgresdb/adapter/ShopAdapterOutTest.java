@@ -8,6 +8,7 @@ import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
 import com.glop.catalogue.out.postgresdb.mapper.ShopOutMapperImpl;
 import com.glop.catalogue.out.postgresdb.repository.CategoryRepository;
 import com.glop.catalogue.out.postgresdb.repository.ClientShopFavoriteRepository;
+import com.glop.catalogue.out.postgresdb.repository.OpeningHoursRepository;
 import com.glop.catalogue.out.postgresdb.repository.ShopRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,11 +37,14 @@ class ShopAdapterOutTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private OpeningHoursRepository openingHoursRepository;
     private ShopAdapterOut adapter;
 
     @BeforeEach
     void setUp() {
-        adapter = new ShopAdapterOut(shopRepository, clientShopFavoriteRepository,categoryRepository, new ShopOutMapperImpl());
+        adapter = new ShopAdapterOut(shopRepository, clientShopFavoriteRepository,categoryRepository, new ShopOutMapperImpl(), openingHoursRepository);
     }
 
     private static ShopModel shop(List<UUID> categoryIds) {

@@ -4,6 +4,7 @@ import com.glop.catalogue.domain.model.shop.OpeningHoursModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.port.out.ShopPortOut;
 import com.glop.catalogue.out.postgresdb.entity.ClientShopFavoriteEntity;
+import com.glop.catalogue.out.postgresdb.entity.OpeningHoursEntity;
 import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
 import com.glop.catalogue.out.postgresdb.mapper.ShopOutMapper;
 import com.glop.catalogue.out.postgresdb.repository.CategoryRepository;
@@ -13,6 +14,7 @@ import com.glop.catalogue.out.postgresdb.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -59,7 +61,7 @@ public class ShopAdapterOut implements ShopPortOut {
     }
 
     public ShopModel findById(UUID shopId) {
-        return shopOutMapper.toShopModel(shopRepository.findById(shopId));
+        return shopOutMapper.toShopModel(shopRepository.findById(shopId).get());
     }
 
     @Override
