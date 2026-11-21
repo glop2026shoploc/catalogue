@@ -25,6 +25,8 @@ public interface ShopInMapper {
 
     ShopPayload toShopPayload(ShopModel shopModel);
 
+    List<ShopPayload> toShopPayloads(List<ShopModel> shopModels);
+
     List<CategoryPayload> toCategoryPayloads(List<CategoryModel> categoryModels);
 
     List<OpeningHoursPayload> toOpeningHoursPayloads(List<OpeningHoursModel> openingHoursModels);

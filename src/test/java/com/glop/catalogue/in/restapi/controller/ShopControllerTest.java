@@ -4,6 +4,7 @@ import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
 import com.glop.catalogue.domain.model.shop.CategoryModel;
 import com.glop.catalogue.domain.model.shop.OpeningHoursModel;
 import com.glop.catalogue.domain.model.shop.ProductModel;
+import com.glop.catalogue.domain.model.shop.ShopAddressModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.CategoryPortIn;
@@ -168,5 +169,33 @@ class ShopControllerTest {
                 .andExpect(jsonPath("$[0].price").value(1.2))
                 .andExpect(jsonPath("$[0].pointsPrice").value(org.hamcrest.Matchers.nullValue()))
                 .andExpect(jsonPath("$[0].earnedPoints").value(3));
+    }
+
+    @Test
+    void testListByCityShouldReturnShopsOfTheCity() throws Exception {
+        when(shopPortIn.listValidatedByCity(CITY_ID)).thenReturn(List.of(ShopModel.builder()
+                .shopId(SHOP_ID)
+                .name("MonCommerce")
+                .status(ShopStatus.VALIDATED)
+                .address(ShopAddressModel.builder().road("rue de la République").cityId(CITY_ID)
+                        .latitude(50.631).longitude(3.061).build())
+                .build()));
+
+        mockMvc.perform(get("/shops").param("cityId", CITY_ID.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].shopId").value(SHOP_ID.toString()))
+                .andExpect(jsonPath("$[0].name").value("MonCommerce"))
+                .andExpect(jsonPath("$[0].address.cityId").value(CITY_ID.toString()))
+                .andExpect(jsonPath("$[0].address.latitude").value(50.631))
+                .andExpect(jsonPath("$[0].address.longitude").value(3.061));
+    }
+
+    @Test
+    void testCreateWithOutOfRangeLatitudeShouldReturn400() throws Exception {
+        mockMvc.perform(post("/shops").contentType(MediaType.APPLICATION_JSON)
+                        .content(VALID_SHOP.replace("\"road\"", "\"latitude\":123,\"road\"")))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(shopPortIn);
     }
 }

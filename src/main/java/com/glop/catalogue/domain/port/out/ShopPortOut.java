@@ -1,7 +1,9 @@
 package com.glop.catalogue.domain.port.out;
 
 import com.glop.catalogue.domain.model.shop.ShopModel;
+import com.glop.catalogue.domain.model.shop.ShopStatus;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ShopPortOut {
@@ -11,4 +13,7 @@ public interface ShopPortOut {
     ShopModel create(ShopModel shop);
 
     ShopModel findById(UUID shopId);
+
+    /** Commerces du statut donné situés dans la ville, triés par nom. */
+    List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId);
 }

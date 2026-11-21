@@ -97,4 +97,17 @@ class ShopAdapterOutTest {
         assertThat(result.getShopId()).isEqualTo(shopId);
         assertThat(result.getName()).isEqualTo("MonCommerce");
     }
+
+    @Test
+    void testFindByStatusAndCityShouldMapShopsFromRepository() {
+        ShopEntity entity = new ShopEntity();
+        entity.setName("MonCommerce");
+        entity.setStatus(ShopStatus.VALIDATED);
+        when(shopRepository.findByStatusAndAddressCityIdOrderByNameAsc(ShopStatus.VALIDATED, CITY_ID))
+                .thenReturn(List.of(entity));
+
+        List<ShopModel> shops = adapter.findByStatusAndCity(ShopStatus.VALIDATED, CITY_ID);
+
+        assertThat(shops).extracting(ShopModel::getName).containsExactly("MonCommerce");
+    }
 }
