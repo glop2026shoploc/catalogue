@@ -2,6 +2,7 @@ package com.glop.catalogue.domain.port.in;
 
 import com.glop.catalogue.domain.model.shop.ShopModel;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ShopPortIn {
@@ -9,4 +10,7 @@ public interface ShopPortIn {
     ShopModel create(ShopModel shop);
 
     void addClientFavoriteShop(UUID shopId, UUID clientId);
+
+    /** Commerces validés de la ville donnée, triés par nom. */
+    List<ShopModel> listValidatedByCity(UUID cityId);
 }

@@ -15,14 +15,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/shops")
 @RequiredArgsConstructor
-/**
- * AI
- */
 public class ShopController {
     private final ShopPortIn shopPortIn;
     private final ShopInMapper shopInMapper;
@@ -41,5 +39,12 @@ public class ShopController {
     @PreAuthorize("hasRole('CLIENT')")
     public void addToFavorite(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable(name = "id") UUID shopId){
         shopPortIn.addClientFavoriteShop(shopId, user.clientId());
+    }
+
+    /** GET /shops?cityId=(la ville de l'utilisateur) */
+    @GetMapping
+    @Operation(summary = "Liste les commerces validés d'une ville, triés par nom")
+    public List<ShopPayload> listByCity(@RequestParam UUID cityId) {
+        return shopInMapper.toShopPayloads(shopPortIn.listValidatedByCity(cityId));
     }
 }

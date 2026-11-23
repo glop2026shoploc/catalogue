@@ -35,6 +35,12 @@ public class ShopService implements ShopPortIn {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ShopModel> listValidatedByCity(UUID cityId) {
+        return shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId);
+    }
+
+    @Override
     public void addClientFavoriteShop(UUID shopId, UUID clientId) {
         if (!shopPortOut.exists(shopId))throw new ShopNotFoundException();
         if(shopPortOut.isInFavorite(shopId,clientId))return;

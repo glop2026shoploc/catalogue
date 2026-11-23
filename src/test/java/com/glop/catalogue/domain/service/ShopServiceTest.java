@@ -76,4 +76,12 @@ class ShopServiceTest {
 
         verifyNoInteractions(categoryPortOut);
     }
+
+    @Test
+    void testListValidatedByCityShouldOnlyAskValidatedShops() {
+        UUID cityId = UUID.randomUUID();
+        when(shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId)).thenReturn(List.of(shop));
+
+        assertThat(shopService.listValidatedByCity(cityId)).containsExactly(shop);
+    }
 }

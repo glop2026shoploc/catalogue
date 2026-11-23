@@ -1,6 +1,7 @@
 package com.glop.catalogue.out.postgresdb.adapter;
 
 import com.glop.catalogue.domain.model.shop.ShopModel;
+import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.out.ShopPortOut;
 import com.glop.catalogue.out.postgresdb.entity.ClientShopFavoriteEntity;
 import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -52,5 +54,10 @@ public class ShopAdapterOut implements ShopPortOut {
     @Override
     public boolean exists(UUID shopId) {
         return shopRepository.existsById(shopId);
+    }
+
+    @Override
+    public List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId) {
+        return shopOutMapper.toShopModels(shopRepository.findByStatusAndAddressCityIdOrderByNameAsc(status, cityId));
     }
 }
