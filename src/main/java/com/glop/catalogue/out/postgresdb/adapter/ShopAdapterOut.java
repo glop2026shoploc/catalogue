@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -60,5 +61,10 @@ public class ShopAdapterOut implements ShopPortOut {
     @Override
     public void removeFavorite(UUID shopId, UUID clientId) {
         clientShopFavoriteRepository.deleteByClientIdAndShop_ShopId(clientId,shopId);
+    }
+
+    @Override
+    public Set<UUID> findFavoriteShopIds(UUID clientId) {
+        return clientShopFavoriteRepository.findShopIdsByClientId(clientId);
     }
 }

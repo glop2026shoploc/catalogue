@@ -17,4 +17,6 @@ public class ShopPayload {
     private ShopAddressPayload address;
     @Schema(description = "Statut de validation", example = "WAITING")
     private ShopStatus status;
+    @Schema(description = "Vrai si le commerce est dans les favoris du client connecté")
+    private boolean favorite;
 }

@@ -127,4 +127,28 @@ class ClientShopFavoriteRepositoryTest {
         }
     }
 
+    @Test
+    @DisplayName("findShopIdsByClientId ne renvoie que les favoris du client demandé")
+    void testFindShopIdsByClientIdShouldReturnOnlyClientFavorites() {
+        UUID clientId = UUID.randomUUID();
+        ShopEntity shopOne = dataFactory.createShopEntity();
+        ShopEntity shopTwo = dataFactory.createShopEntity();
+        ShopEntity otherClientShop = dataFactory.createShopEntity();
+
+        for (ShopEntity shop : java.util.List.of(shopOne, shopTwo)) {
+            ClientShopFavoriteEntity favorite = new ClientShopFavoriteEntity();
+            favorite.setClientId(clientId);
+            favorite.setShop(shop);
+            clientShopFavoriteRepository.save(favorite);
+        }
+        ClientShopFavoriteEntity otherFavorite = new ClientShopFavoriteEntity();
+        otherFavorite.setClientId(UUID.randomUUID());
+        otherFavorite.setShop(otherClientShop);
+        clientShopFavoriteRepository.save(otherFavorite);
+
+        assertThat(clientShopFavoriteRepository.findShopIdsByClientId(clientId))
+                .containsExactlyInAnyOrder(shopOne.getShopId(), shopTwo.getShopId());
+        assertThat(clientShopFavoriteRepository.findShopIdsByClientId(UUID.randomUUID())).isEmpty();
+    }
+
 }

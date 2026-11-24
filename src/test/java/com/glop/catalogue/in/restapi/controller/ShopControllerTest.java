@@ -130,10 +130,11 @@ class ShopControllerTest extends ControllerTest {
 
     @Test
     void testListByCityShouldReturnShopsOfTheCity() throws Exception {
-        when(shopPortIn.listValidatedByCity(CITY_ID)).thenReturn(List.of(ShopModel.builder()
+        when(shopPortIn.listValidatedByCity(CITY_ID, CLIENT_ID)).thenReturn(List.of(ShopModel.builder()
                 .shopId(SHOP_ID)
                 .name("MonCommerce")
                 .status(ShopStatus.VALIDATED)
+                .favorite(true)
                 .address(ShopAddressModel.builder().road("rue de la République").cityId(CITY_ID)
                         .latitude(50.631).longitude(3.061).build())
                 .build()));
@@ -144,7 +145,8 @@ class ShopControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$[0].name").value("MonCommerce"))
                 .andExpect(jsonPath("$[0].address.cityId").value(CITY_ID.toString()))
                 .andExpect(jsonPath("$[0].address.latitude").value(50.631))
-                .andExpect(jsonPath("$[0].address.longitude").value(3.061));
+                .andExpect(jsonPath("$[0].address.longitude").value(3.061))
+                .andExpect(jsonPath("$[0].favorite").value(true));
     }
 
     @Test

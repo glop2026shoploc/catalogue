@@ -4,6 +4,7 @@ import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface ShopPortOut {
@@ -17,6 +18,9 @@ public interface ShopPortOut {
     boolean exists(UUID shopId);
 
     void removeFavorite(UUID shopId, UUID clientId);
+
+    /** Identifiants des commerces mis en favori par le client. */
+    Set<UUID> findFavoriteShopIds(UUID clientId);
 
     /** Commerces du statut donné situés dans la ville, triés par nom. */
     List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId);

@@ -103,6 +103,16 @@ class ShopAdapterOutTest {
         List<ShopModel> shops = adapter.findByStatusAndCity(ShopStatus.VALIDATED, CITY_ID);
 
         assertThat(shops).extracting(ShopModel::getName).containsExactly("MonCommerce");
+        assertThat(shops).extracting(ShopModel::isFavorite).containsExactly(false);
+    }
+
+    @Test
+    void testFindFavoriteShopIdsShouldAskRepository() {
+        UUID clientId = UUID.randomUUID();
+        UUID shopId = UUID.randomUUID();
+        when(clientShopFavoriteRepository.findShopIdsByClientId(clientId)).thenReturn(java.util.Set.of(shopId));
+
+        assertThat(adapter.findFavoriteShopIds(clientId)).containsExactly(shopId);
     }
 
     @Test

@@ -43,8 +43,9 @@ public class ShopController {
 
     /** GET /shops?cityId=(la ville de l'utilisateur) */
     @GetMapping
-    @Operation(summary = "Liste les commerces validés d'une ville, triés par nom")
-    public List<ShopPayload> listByCity(@RequestParam UUID cityId) {
-        return shopInMapper.toShopPayloads(shopPortIn.listValidatedByCity(cityId));
+    @Operation(summary = "Liste les commerces validés d'une ville, triés par nom, avec les favoris du client connecté")
+    public List<ShopPayload> listByCity(@AuthenticationPrincipal AuthenticatedUser user, @RequestParam UUID cityId) {
+        UUID clientId = user == null ? null : user.clientId();
+        return shopInMapper.toShopPayloads(shopPortIn.listValidatedByCity(cityId, clientId));
     }
 }

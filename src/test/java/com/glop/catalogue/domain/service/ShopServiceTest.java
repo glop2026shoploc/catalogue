@@ -19,10 +19,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -87,7 +89,45 @@ class ShopServiceTest {
         UUID cityId = UUID.randomUUID();
         when(shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId)).thenReturn(List.of(shop));
 
-        assertThat(shopService.listValidatedByCity(cityId)).containsExactly(shop);
+        assertThat(shopService.listValidatedByCity(cityId, null)).containsExactly(shop);
+    }
+
+    @Test
+    @DisplayName("Marque comme favoris uniquement les commerces mis en favori par le client")
+    void testListValidatedByCityShouldFlagClientFavorites() {
+        UUID cityId = UUID.randomUUID();
+        UUID clientId = UUID.randomUUID();
+        ShopModel favoriteShop = ShopModel.builder().shopId(UUID.randomUUID()).name("Favori").build();
+        ShopModel otherShop = ShopModel.builder().shopId(UUID.randomUUID()).name("Autre").build();
+        when(shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId)).thenReturn(List.of(favoriteShop, otherShop));
+        when(shopPortOut.findFavoriteShopIds(clientId)).thenReturn(Set.of(favoriteShop.getShopId(), UUID.randomUUID()));
+
+        List<ShopModel> shops = shopService.listValidatedByCity(cityId, clientId);
+
+        assertThat(shops).extracting(ShopModel::getName, ShopModel::isFavorite)
+                .containsExactly(tuple("Favori", true), tuple("Autre", false));
+    }
+
+    @Test
+    @DisplayName("Sans client connecté, aucun favori n'est recherché ni marqué")
+    void testListValidatedByCityWithoutClientShouldNotLookUpFavorites() {
+        UUID cityId = UUID.randomUUID();
+        when(shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId)).thenReturn(List.of(shop));
+
+        List<ShopModel> shops = shopService.listValidatedByCity(cityId, null);
+
+        assertThat(shops).extracting(ShopModel::isFavorite).containsExactly(false);
+        verify(shopPortOut, never()).findFavoriteShopIds(any());
+    }
+
+    @Test
+    @DisplayName("Sans commerce dans la ville, les favoris ne sont pas recherchés")
+    void testListValidatedByCityWithNoShopShouldNotLookUpFavorites() {
+        UUID cityId = UUID.randomUUID();
+        when(shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId)).thenReturn(List.of());
+
+        assertThat(shopService.listValidatedByCity(cityId, UUID.randomUUID())).isEmpty();
+        verify(shopPortOut, never()).findFavoriteShopIds(any());
     }
 
     @Nested

@@ -12,5 +12,5 @@ public interface ShopPortIn {
     void addOrRemoveClientFavoriteShop(UUID shopId, boolean isFavorite, UUID clientId);
 
     /** Commerces validés de la ville donnée, triés par nom. */
-    List<ShopModel> listValidatedByCity(UUID cityId);
+    List<ShopModel> listValidatedByCity(UUID cityId, UUID clientId);
 }

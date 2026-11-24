@@ -17,6 +17,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface ShopOutMapper {
 
+    @Mapping(target = "favorite", ignore = true)
     @Mapping(target = "siret", source = "siretNumber")
     @Mapping(target = "categoryIds", source = "categories")
     ShopModel toShopModel(ShopEntity shopEntity);

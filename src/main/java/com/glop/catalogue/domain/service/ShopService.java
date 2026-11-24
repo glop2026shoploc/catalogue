@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -36,8 +37,14 @@ public class ShopService implements ShopPortIn {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopModel> listValidatedByCity(UUID cityId) {
-        return shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId);
+    public List<ShopModel> listValidatedByCity(UUID cityId, UUID clientId) {
+        List<ShopModel> shops = shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId);
+        if (clientId == null || shops.isEmpty()) {
+            return shops;
+        }
+        Set<UUID> favoriteShopIds = shopPortOut.findFavoriteShopIds(clientId);
+        shops.forEach(shop -> shop.setFavorite(favoriteShopIds.contains(shop.getShopId())));
+        return shops;
     }
 
     @Override

@@ -21,4 +21,5 @@ public class ShopModel {
     private List<UUID> categoryIds = new ArrayList<>();
     private ShopAddressModel address;
     private ShopStatus status;
+    private boolean favorite;
 }
