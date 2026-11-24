@@ -1,0 +1,2 @@
+app:
+    secret-key: test-only-secret-key-not-used-anywhere-else-0123456789
