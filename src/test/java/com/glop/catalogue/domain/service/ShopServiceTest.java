@@ -1,13 +1,18 @@
 package com.glop.catalogue.domain.service;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
+import com.glop.catalogue.domain.config.exception.ShopNotFoundException;
 import com.glop.catalogue.domain.model.shop.ShopAddressModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.out.CategoryPortOut;
 import com.glop.catalogue.domain.port.out.ShopPortOut;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -84,4 +89,48 @@ class ShopServiceTest {
 
         assertThat(shopService.listValidatedByCity(cityId)).containsExactly(shop);
     }
+
+    @Nested
+    @DisplayName("addOrRemoveClientFavoriteShop")
+    class Favorite {
+        private final UUID shopId = UUID.randomUUID();
+        private final UUID clientId = UUID.randomUUID();
+
+        @Test
+        @DisplayName("Ajoute le commerce aux favoris quand isFavorite = true")
+        void testShouldAddFavoriteWhenIsFavoriteIsTrue() {
+            when(shopPortOut.exists(shopId)).thenReturn(true);
+
+            shopService.addOrRemoveClientFavoriteShop(shopId, true, clientId);
+
+            verify(shopPortOut).addToFavorite(shopId, clientId);
+            verify(shopPortOut, never()).removeFavorite(any(), any());
+        }
+
+        @Test
+        @DisplayName("Retire le commerce des favoris quand isFavorite = false")
+        void testShouldRemoveFavoriteWhenIsFavoriteIsFalse() {
+            when(shopPortOut.exists(shopId)).thenReturn(true);
+
+            shopService.addOrRemoveClientFavoriteShop(shopId, false, clientId);
+
+            verify(shopPortOut).removeFavorite(shopId, clientId);
+            verify(shopPortOut, never()).addToFavorite(any(), any());
+        }
+
+        @ParameterizedTest(name = "isFavorite = {0}")
+        @ValueSource(booleans = {true, false})
+        @DisplayName("Lève ShopNotFoundException et ne touche pas aux favoris si le commerce n'existe pas")
+        void testShouldThrowWhenShopDoesNotExist(boolean isFavorite) {
+            when(shopPortOut.exists(shopId)).thenReturn(false);
+
+            assertThatThrownBy(() -> shopService.addOrRemoveClientFavoriteShop(shopId, isFavorite, clientId))
+                    .isInstanceOf(ShopNotFoundException.class);
+
+            verify(shopPortOut, never()).addToFavorite(any(), any());
+            verify(shopPortOut, never()).removeFavorite(any(), any());
+        }
+    }
+
+
 }

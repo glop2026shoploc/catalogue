@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
-class ShopDataRepositoryTest {
+class ClientFavoriteShopDataRepositoryTest {
 
     @Autowired
     private ShopRepository shopRepository;

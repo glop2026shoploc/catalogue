@@ -2,6 +2,7 @@ package com.glop.catalogue.in.restapi.config.error;
 
 import com.glop.catalogue.domain.config.exception.AskedErrorException;
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
+import com.glop.catalogue.domain.config.exception.ShopNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,11 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(ShopAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleShopAlreadyExists(ShopAlreadyExistsException ex) {
         return new ResponseEntity<>(ErrorResponse.builder().message(ex.getMessage()).build(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ShopNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleShopNotFound(ShopNotFoundException ex) {
+        return new ResponseEntity<>(ErrorResponse.builder().message(ex.getMessage()).build(), HttpStatus.NOT_FOUND);
     }
 
     /** Données en double en base (ex : même SIRET envoyé deux fois en même temps) */    

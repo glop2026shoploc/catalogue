@@ -14,9 +14,9 @@ public interface ShopPortOut {
 
     void addToFavorite(UUID shopId, UUID clientId);
 
-    boolean isInFavorite(UUID shopId, UUID clientId);
-
     boolean exists(UUID shopId);
+
+    void removeFavorite(UUID shopId, UUID clientId);
 
     /** Commerces du statut donné situés dans la ville, triés par nom. */
     List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId);

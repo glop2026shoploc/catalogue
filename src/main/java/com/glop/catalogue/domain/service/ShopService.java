@@ -41,10 +41,15 @@ public class ShopService implements ShopPortIn {
     }
 
     @Override
-    public void addClientFavoriteShop(UUID shopId, UUID clientId) {
+    public void addOrRemoveClientFavoriteShop(UUID shopId, boolean isFavorite, UUID clientId) {
         if (!shopPortOut.exists(shopId))throw new ShopNotFoundException();
-        if(shopPortOut.isInFavorite(shopId,clientId))return;
-        shopPortOut.addToFavorite(shopId,clientId);
+        if(isFavorite){
+            shopPortOut.addToFavorite(shopId,clientId);
+        }else{
+            shopPortOut.removeFavorite(shopId,clientId);
+        }
+
+
 
     }
 

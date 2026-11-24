@@ -9,7 +9,7 @@ public interface ShopPortIn {
     /** Crée un commerce en attente de validation */
     ShopModel create(ShopModel shop);
 
-    void addClientFavoriteShop(UUID shopId, UUID clientId);
+    void addOrRemoveClientFavoriteShop(UUID shopId, boolean isFavorite, UUID clientId);
 
     /** Commerces validés de la ville donnée, triés par nom. */
     List<ShopModel> listValidatedByCity(UUID cityId);

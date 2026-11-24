@@ -37,8 +37,8 @@ public class ShopController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Mettre un magasin en favoris")
     @PreAuthorize("hasRole('CLIENT')")
-    public void addToFavorite(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable(name = "id") UUID shopId){
-        shopPortIn.addClientFavoriteShop(shopId, user.clientId());
+    public void updateFavorite(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable(name = "id") UUID shopId, @RequestParam(name = "isFavorite")boolean isFavorite ){
+        shopPortIn.addOrRemoveClientFavoriteShop(shopId, isFavorite,user.clientId());
     }
 
     /** GET /shops?cityId=(la ville de l'utilisateur) */

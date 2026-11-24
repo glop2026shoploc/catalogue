@@ -46,10 +46,6 @@ public class ShopAdapterOut implements ShopPortOut {
         clientShopFavoriteRepository.save(clientShopFavoriteEntity);
     }
 
-    @Override
-    public boolean isInFavorite(UUID shopId, UUID clientId) {
-        return clientShopFavoriteRepository.existsByClientIdAndShop_ShopId(clientId, shopId);
-    }
 
     @Override
     public boolean exists(UUID shopId) {
@@ -59,5 +55,10 @@ public class ShopAdapterOut implements ShopPortOut {
     @Override
     public List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId) {
         return shopOutMapper.toShopModels(shopRepository.findByStatusAndAddressCityIdOrderByNameAsc(status, cityId));
+    }
+
+    @Override
+    public void removeFavorite(UUID shopId, UUID clientId) {
+        clientShopFavoriteRepository.deleteByClientIdAndShop_ShopId(clientId,shopId);
     }
 }

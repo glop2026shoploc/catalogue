@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface ClientShopFavoriteRepository extends JpaRepository<ClientShopFavoriteEntity, UUID> {
     
     boolean existsByClientIdAndShop_ShopId(UUID clientId, UUID shopId);
+    long deleteByClientIdAndShop_ShopId(UUID clientId, UUID shopId);
 }
