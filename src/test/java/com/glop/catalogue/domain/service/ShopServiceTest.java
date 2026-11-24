@@ -132,7 +132,7 @@ class ShopServiceTest {
     }
 
     @Test
-    void testUpdateOpeningHoursWithClodeBeforeOpenShouldThrow() {
+    void testUpdateOpeningHoursWithCloseBeforeOpenShouldThrow() {
         List<OpeningHoursModel> hours = List.of(
                 new OpeningHoursModel(1, LocalTime.parse("18:00"), LocalTime.parse("08:00")));
 
@@ -142,5 +142,30 @@ class ShopServiceTest {
 
         verify(shopPortOut, never()).replaceOpeningHours(any(), any());
         verifyNoInteractions(notificationPortOut);
+    }
+
+    @Test
+    void testUpdateOpeningHoursWithCloseEqualToOpenShouldThrow() {
+        List<OpeningHoursModel> hours = List.of(
+                new OpeningHoursModel(1, LocalTime.parse("08:00"), LocalTime.parse("08:00")));
+
+        assertThatThrownBy(() -> shopService.updateOpeningHours(SHOP_ID, hours))
+                .isInstanceOf(OpeningHoursNotValidException.class)
+                .hasMessage("L'heure de fermeture doit être après l'heure d'ouverture (jour 1).");
+
+        verify(shopPortOut, never()).replaceOpeningHours(any(), any());
+    }
+
+    @Test
+    void testUpdateOpeningHoursWithOverlappingHoursShouldThrow() {
+        List<OpeningHoursModel> hours = List.of(
+                new OpeningHoursModel(1, LocalTime.parse("08:00"), LocalTime.parse("13:00")),
+                new OpeningHoursModel(1, LocalTime.parse("12:00"), LocalTime.parse("17:00")));
+
+        assertThatThrownBy(() -> shopService.updateOpeningHours(SHOP_ID, hours))
+                .isInstanceOf(OpeningHoursNotValidException.class)
+                .hasMessage("Deux créneaux se chevauchent le jour 1.");
+
+        verify(shopPortOut, never()).replaceOpeningHours(any(), any());
     }
 }
