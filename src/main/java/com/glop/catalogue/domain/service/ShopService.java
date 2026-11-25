@@ -1,6 +1,7 @@
 package com.glop.catalogue.domain.service;
 
 import com.glop.catalogue.domain.config.exception.ShopAlreadyExistsException;
+import com.glop.catalogue.domain.config.exception.ShopNotFoundException;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.in.ShopPortIn;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -35,7 +37,27 @@ public class ShopService implements ShopPortIn {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopModel> listValidatedByCity(UUID cityId) {
-        return shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId);
+    public List<ShopModel> listValidatedByCity(UUID cityId, UUID clientId) {
+        List<ShopModel> shops = shopPortOut.findByStatusAndCity(ShopStatus.VALIDATED, cityId);
+        if (clientId == null || shops.isEmpty()) {
+            return shops;
+        }
+        Set<UUID> favoriteShopIds = shopPortOut.findFavoriteShopIds(clientId);
+        shops.forEach(shop -> shop.setFavorite(favoriteShopIds.contains(shop.getShopId())));
+        return shops;
     }
+
+    @Override
+    public void addOrRemoveClientFavoriteShop(UUID shopId, boolean isFavorite, UUID clientId) {
+        if (!shopPortOut.exists(shopId))throw new ShopNotFoundException();
+        if(isFavorite){
+            shopPortOut.addToFavorite(shopId,clientId);
+        }else{
+            shopPortOut.removeFavorite(shopId,clientId);
+        }
+
+
+
+    }
+
 }

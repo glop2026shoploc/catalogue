@@ -3,21 +3,25 @@ package com.glop.catalogue.out.postgresdb.adapter;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.domain.port.out.ShopPortOut;
+import com.glop.catalogue.out.postgresdb.entity.ClientShopFavoriteEntity;
 import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
 import com.glop.catalogue.out.postgresdb.mapper.ShopOutMapper;
 import com.glop.catalogue.out.postgresdb.repository.CategoryRepository;
+import com.glop.catalogue.out.postgresdb.repository.ClientShopFavoriteRepository;
 import com.glop.catalogue.out.postgresdb.repository.ShopRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class ShopAdapterOut implements ShopPortOut {
     private final ShopRepository shopRepository;
+    private final ClientShopFavoriteRepository clientShopFavoriteRepository;
     private final CategoryRepository categoryRepository;
     private final ShopOutMapper shopOutMapper;
 
@@ -36,7 +40,31 @@ public class ShopAdapterOut implements ShopPortOut {
     }
 
     @Override
+    public void addToFavorite(UUID shopId, UUID clientId) {
+        ClientShopFavoriteEntity clientShopFavoriteEntity = new ClientShopFavoriteEntity();
+        clientShopFavoriteEntity.setClientId(clientId);
+        clientShopFavoriteEntity.setShop(shopRepository.findById(shopId).get());
+        clientShopFavoriteRepository.save(clientShopFavoriteEntity);
+    }
+
+
+    @Override
+    public boolean exists(UUID shopId) {
+        return shopRepository.existsById(shopId);
+    }
+
+    @Override
     public List<ShopModel> findByStatusAndCity(ShopStatus status, UUID cityId) {
         return shopOutMapper.toShopModels(shopRepository.findByStatusAndAddressCityIdOrderByNameAsc(status, cityId));
+    }
+
+    @Override
+    public void removeFavorite(UUID shopId, UUID clientId) {
+        clientShopFavoriteRepository.deleteByClientIdAndShop_ShopId(clientId,shopId);
+    }
+
+    @Override
+    public Set<UUID> findFavoriteShopIds(UUID clientId) {
+        return clientShopFavoriteRepository.findShopIdsByClientId(clientId);
     }
 }

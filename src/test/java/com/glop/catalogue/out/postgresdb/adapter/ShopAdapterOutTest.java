@@ -4,11 +4,14 @@ import com.glop.catalogue.domain.model.shop.ShopAddressModel;
 import com.glop.catalogue.domain.model.shop.ShopModel;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.out.postgresdb.entity.CategoryEntity;
+import com.glop.catalogue.out.postgresdb.entity.ClientShopFavoriteEntity;
 import com.glop.catalogue.out.postgresdb.entity.ShopEntity;
 import com.glop.catalogue.out.postgresdb.mapper.ShopOutMapperImpl;
 import com.glop.catalogue.out.postgresdb.repository.CategoryRepository;
+import com.glop.catalogue.out.postgresdb.repository.ClientShopFavoriteRepository;
 import com.glop.catalogue.out.postgresdb.repository.ShopRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -16,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,13 +33,17 @@ class ShopAdapterOutTest {
 
     @Mock
     private ShopRepository shopRepository;
+
+    @Mock
+    private ClientShopFavoriteRepository clientShopFavoriteRepository;
+
     @Mock
     private CategoryRepository categoryRepository;
     private ShopAdapterOut adapter;
 
     @BeforeEach
     void setUp() {
-        adapter = new ShopAdapterOut(shopRepository, categoryRepository, new ShopOutMapperImpl());
+        adapter = new ShopAdapterOut(shopRepository, clientShopFavoriteRepository,categoryRepository, new ShopOutMapperImpl());
     }
 
     private static ShopModel shop(List<UUID> categoryIds) {
@@ -95,5 +103,42 @@ class ShopAdapterOutTest {
         List<ShopModel> shops = adapter.findByStatusAndCity(ShopStatus.VALIDATED, CITY_ID);
 
         assertThat(shops).extracting(ShopModel::getName).containsExactly("MonCommerce");
+        assertThat(shops).extracting(ShopModel::isFavorite).containsExactly(false);
+    }
+
+    @Test
+    void testFindFavoriteShopIdsShouldAskRepository() {
+        UUID clientId = UUID.randomUUID();
+        UUID shopId = UUID.randomUUID();
+        when(clientShopFavoriteRepository.findShopIdsByClientId(clientId)).thenReturn(java.util.Set.of(shopId));
+
+        assertThat(adapter.findFavoriteShopIds(clientId)).containsExactly(shopId);
+    }
+
+    @Test
+    @DisplayName("Add Favorite (Single).")
+    void testAddFavoriteShouldCallSave() {
+        UUID shopId = UUID.randomUUID();
+        UUID clientId = UUID.randomUUID();
+        ShopEntity shopEntity = new ShopEntity();
+        shopEntity.setShopId(shopId);
+        when(shopRepository.findById(any())).thenReturn(Optional.of(shopEntity));
+        adapter.addToFavorite(shopId, clientId);
+
+        verify(clientShopFavoriteRepository).save(argThat(fav ->
+                fav.getClientId().equals(clientId)
+                        && fav.getShop().getShopId().equals(shopId)));
+
+    }
+
+    @Test
+    @DisplayName("Remove Favorite (Single).")
+    void testRemoveFavoriteShouldCallDelete() {
+        UUID shopId = UUID.randomUUID();
+        UUID clientId = UUID.randomUUID();
+
+        adapter.removeFavorite(shopId, clientId);
+
+        verify(clientShopFavoriteRepository).deleteByClientIdAndShop_ShopId(clientId, shopId);
     }
 }
