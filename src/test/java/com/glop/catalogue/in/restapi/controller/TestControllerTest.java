@@ -1,5 +1,6 @@
 package com.glop.catalogue.in.restapi.controller;
 
+import org.springframework.test.context.ActiveProfiles;
 import com.glop.catalogue.TestcontainersConfiguration;
 import io.jsonwebtoken.Jwts;
 import io.restassured.RestAssured;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(TestcontainersConfiguration.class)
 class TestControllerTest {

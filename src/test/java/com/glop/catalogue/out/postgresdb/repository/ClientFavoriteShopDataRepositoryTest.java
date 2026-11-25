@@ -1,5 +1,6 @@
 package com.glop.catalogue.out.postgresdb.repository;
 
+import org.springframework.test.context.ActiveProfiles;
 import com.glop.catalogue.TestcontainersConfiguration;
 import com.glop.catalogue.domain.model.shop.ShopStatus;
 import com.glop.catalogue.out.postgresdb.entity.*;
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
 class ClientFavoriteShopDataRepositoryTest {

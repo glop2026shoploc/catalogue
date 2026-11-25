@@ -1,5 +1,6 @@
 package com.glop.catalogue.out.postgresdb.repository;
 
+import org.springframework.test.context.ActiveProfiles;
 import com.glop.catalogue.TestcontainersConfiguration;
 import com.glop.catalogue.out.postgresdb.entity.*;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Import({TestcontainersConfiguration.class,DataFactory.class})
+@ActiveProfiles("test")
 @DataJpaTest
 @DisplayName("Client Favorite Shop - Repository Test")
 class ClientShopFavoriteRepositoryTest {
